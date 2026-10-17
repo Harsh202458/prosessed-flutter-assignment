@@ -5,8 +5,10 @@ import 'package:shopsphere/core/error/exceptions.dart';
 import 'package:shopsphere/core/error/failures.dart';
 import 'package:shopsphere/core/error/result.dart';
 import 'package:shopsphere/features/products/data/datasources/product_remote_data_source.dart';
+import 'package:shopsphere/features/products/data/models/product_model.dart';
 import 'package:shopsphere/features/products/data/models/product_page_model.dart';
 import 'package:shopsphere/features/products/data/repositories/product_repository_impl.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/product_page.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
 
@@ -71,6 +73,26 @@ void main() {
       final result = await repository.getCategories();
 
       expect((result as Err).failure, isA<TimeoutFailure>());
+    });
+
+    test('getProductById returns the full product on success', () async {
+      when(() => remote.getProductById(1)).thenAnswer(
+        (_) async => ProductModel.fromJson(fixture('product_detail.json')),
+      );
+
+      final result = await repository.getProductById(1);
+
+      expect((result as Success<Product>).data.reviews, isNotEmpty);
+    });
+
+    test('getProductById maps a 404 to NotFoundFailure', () async {
+      when(
+        () => remote.getProductById(9999),
+      ).thenThrow(const NotFoundException('Product not found'));
+
+      final result = await repository.getProductById(9999);
+
+      expect((result as Err).failure, isA<NotFoundFailure>());
     });
   });
 
