@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
+import 'package:shopsphere/features/products/presentation/widgets/category_style.dart';
 import 'package:shopsphere/features/products/presentation/widgets/price_view.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_image.dart';
 import 'package:shopsphere/features/products/presentation/widgets/rating_view.dart';
@@ -16,19 +16,32 @@ class ProductCard extends StatelessWidget {
   static const double _padding = AppSpacing.md;
   static const double _gap = AppSpacing.xs;
 
-  /// Height of a card that is [width] wide, sized from the current text
-  /// scale so the text block never overflows (e.g. at 1.3× font size).
+  /// Height of a card that is [width] wide. Derived from the current text
+  /// scale so the text block fits exactly, even at 1.3× system font size.
   static double extentFor(BuildContext context, double width) {
     final theme = Theme.of(context).textTheme;
     final scaler = MediaQuery.textScalerOf(context);
     double line(TextStyle? style) =>
         scaler.scale(style?.fontSize ?? 14) * (style?.height ?? 1.3);
 
+    final priceRow = [
+      line(theme.titleMedium),
+      line(theme.bodySmall),
+    ].reduce((a, b) => a > b ? a : b);
     final textBlock =
+        line(theme.labelSmall) +
+        _gap +
         line(theme.titleSmall) * 2 +
-        line(theme.titleMedium) +
-        line(theme.bodySmall) * 1.15;
-    return width + _padding * 2 + _gap * 2 + textBlock + AppSpacing.xs;
+        _gap +
+        priceRow;
+    return width + _padding * 2 + textBlock + AppSpacing.xxs;
+  }
+
+  String get _subtitle {
+    final category = CategoryStyle.labelFor(product.category);
+    final brand = product.brand;
+    if (category.isEmpty) return brand ?? '';
+    return brand == null ? category : '$category · $brand';
   }
 
   @override
@@ -48,9 +61,9 @@ class ProductCard extends StatelessWidget {
                 fit: StackFit.expand,
                 children: [
                   ColoredBox(
-                    color: scheme.surfaceContainerHigh,
+                    color: scheme.surfaceContainerHighest,
                     child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       child: ProductImage(
                         url: product.thumbnail,
                         semanticLabel: product.title,
@@ -63,8 +76,8 @@ class ProductCard extends StatelessWidget {
                       left: AppSpacing.sm,
                       child: _Tag(
                         label: Formatters.discount(product.discountPercentage),
-                        background: AppColors.sale,
-                        foreground: Colors.white,
+                        background: scheme.primary,
+                        foreground: scheme.onPrimary,
                       ),
                     ),
                   if (!product.isInStock)
@@ -86,15 +99,28 @@ class ProductCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    _subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: scheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: _gap),
+                  Text(
                     product.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.titleSmall,
                   ),
                   const SizedBox(height: _gap),
-                  PriceView(product: product),
-                  const SizedBox(height: _gap),
-                  RatingView(rating: product.rating),
+                  Row(
+                    children: [
+                      Expanded(child: PriceView(product: product)),
+                      const SizedBox(width: AppSpacing.xs),
+                      RatingView(rating: product.rating),
+                    ],
+                  ),
                 ],
               ),
             ),
