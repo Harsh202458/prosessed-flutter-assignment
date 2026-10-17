@@ -1,0 +1,10 @@
+{
+  "id": 999,
+  "title": "Fresh Apples",
+  "price": 9.99,
+  "discountPercentage": 10.48,
+  "rating": 2.56,
+  "stock": 99,
+  "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp",
+  "category": "groceries"
+}

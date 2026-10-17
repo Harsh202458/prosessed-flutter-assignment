@@ -1,0 +1,29 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "title": "Essence Mascara Lash Princess",
+      "price": 9.99,
+      "discountPercentage": 10.48,
+      "rating": 2.56,
+      "stock": 99,
+      "brand": "Essence",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp",
+      "category": "beauty"
+    },
+    {
+      "id": 2,
+      "title": "Eyeshadow Palette with Mirror",
+      "price": 19.99,
+      "discountPercentage": 18.19,
+      "rating": 2.86,
+      "stock": 34,
+      "brand": "Glamour Beauty",
+      "thumbnail": "https://cdn.dummyjson.com/product-images/beauty/eyeshadow-palette-with-mirror/thumbnail.webp",
+      "category": "beauty"
+    }
+  ],
+  "total": 194,
+  "skip": 0,
+  "limit": 2
+}
