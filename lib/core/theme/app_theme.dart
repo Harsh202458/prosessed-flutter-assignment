@@ -10,11 +10,7 @@ abstract final class AppTheme {
   static ThemeData get dark => _build(Brightness.dark);
 
   static ThemeData _build(Brightness brightness) {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.seed,
-      brightness: brightness,
-      dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
-    );
+    final scheme = _scheme(brightness);
     final base = ThemeData(
       colorScheme: scheme,
       brightness: brightness,
@@ -150,6 +146,38 @@ abstract final class AppTheme {
         shape: roundedMd,
         selectedColor: scheme.primary,
       ),
+    );
+  }
+
+  /// Vibrant coral accents on near-neutral surfaces: the brand colour stays
+  /// on buttons, tags and prices, while cards and backgrounds stay calm so
+  /// product photos keep their own colours.
+  static ColorScheme _scheme(Brightness brightness) {
+    final accents = ColorScheme.fromSeed(
+      seedColor: AppColors.seed,
+      brightness: brightness,
+      dynamicSchemeVariant: DynamicSchemeVariant.vibrant,
+    );
+    final neutral = ColorScheme.fromSeed(
+      seedColor: AppColors.seed,
+      brightness: brightness,
+      dynamicSchemeVariant: DynamicSchemeVariant.neutral,
+    );
+    return accents.copyWith(
+      surface: neutral.surface,
+      surfaceDim: neutral.surfaceDim,
+      surfaceBright: neutral.surfaceBright,
+      surfaceContainerLowest: neutral.surfaceContainerLowest,
+      surfaceContainerLow: neutral.surfaceContainerLow,
+      surfaceContainer: neutral.surfaceContainer,
+      surfaceContainerHigh: neutral.surfaceContainerHigh,
+      surfaceContainerHighest: neutral.surfaceContainerHighest,
+      onSurface: neutral.onSurface,
+      onSurfaceVariant: neutral.onSurfaceVariant,
+      outline: neutral.outline,
+      outlineVariant: neutral.outlineVariant,
+      inverseSurface: neutral.inverseSurface,
+      onInverseSurface: neutral.onInverseSurface,
     );
   }
 
