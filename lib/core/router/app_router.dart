@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/di/injection.dart';
+import 'package:shopsphere/core/router/stream_listenable.dart';
 import 'package:shopsphere/core/widgets/adaptive_shell.dart';
+import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
+import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
+import 'package:shopsphere/features/auth/presentation/pages/splash_page.dart';
 import 'package:shopsphere/features/cart/presentation/pages/cart_page.dart';
 import 'package:shopsphere/features/products/presentation/pages/products_page.dart';
 import 'package:shopsphere/features/profile/presentation/pages/profile_page.dart';
 
 abstract final class AppRoutes {
+  static const String splash = '/splash';
+  static const String login = '/login';
   static const String products = '/products';
   static const String cart = '/cart';
   static const String profile = '/profile';
@@ -29,9 +38,23 @@ const _destinations = [
   ),
 ];
 
-GoRouter createRouter() => GoRouter(
-  initialLocation: AppRoutes.products,
+GoRouter createRouter(AuthBloc authBloc) => GoRouter(
+  initialLocation: AppRoutes.splash,
+  refreshListenable: StreamListenable(authBloc.stream),
+  redirect: (context, state) =>
+      _redirect(authBloc.state.status, state.matchedLocation),
   routes: [
+    GoRoute(
+      path: AppRoutes.splash,
+      builder: (context, state) => const SplashPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.login,
+      builder: (context, state) => BlocProvider(
+        create: (_) => sl<LoginCubit>(),
+        child: const LoginPage(),
+      ),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) =>
           AdaptiveShell(navigationShell: shell, destinations: _destinations),
@@ -64,3 +87,15 @@ GoRouter createRouter() => GoRouter(
     ),
   ],
 );
+
+/// Keeps users on the splash screen until the session is known, sends
+/// signed-out users to login, and keeps signed-in users out of both.
+String? _redirect(AuthStatus status, String location) {
+  final onSplash = location == AppRoutes.splash;
+  final onLogin = location == AppRoutes.login;
+  return switch (status) {
+    AuthStatus.unknown => onSplash ? null : AppRoutes.splash,
+    AuthStatus.unauthenticated => onLogin ? null : AppRoutes.login,
+    AuthStatus.authenticated => onSplash || onLogin ? AppRoutes.products : null,
+  };
+}
