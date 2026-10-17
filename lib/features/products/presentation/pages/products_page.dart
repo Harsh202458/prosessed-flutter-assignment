@@ -8,9 +8,11 @@ import 'package:shopsphere/core/widgets/error_view.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/widgets/category_chips.dart';
+import 'package:shopsphere/features/products/presentation/widgets/category_style.dart';
+import 'package:shopsphere/features/products/presentation/widgets/home_app_bar.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_grid.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_grid_skeleton.dart';
-import 'package:shopsphere/features/products/presentation/widgets/product_search_field.dart';
+import 'package:shopsphere/features/products/presentation/widgets/promo_carousel.dart';
 import 'package:shopsphere/features/products/presentation/widgets/sort_sheet.dart';
 
 class ProductsPage extends StatefulWidget {
@@ -21,14 +23,50 @@ class ProductsPage extends StatefulWidget {
 }
 
 class _ProductsPageState extends State<ProductsPage> {
+  /// Start loading the next page this far (in dp) before the end.
+  static const double _prefetchExtent = 600;
+
   final _searchController = TextEditingController();
+  final _scrollController = ScrollController();
 
   ProductListBloc get _bloc => context.read<ProductListBloc>();
 
   @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onScroll() {
+    // After a failed page, wait for Retry instead of re-requesting on every
+    // scroll tick.
+    if (_bloc.state.loadMoreError != null) return;
+    if (_scrollController.position.extentAfter < _prefetchExtent) {
+      _bloc.add(const ProductListNextPageRequested());
+    }
+  }
+
+  /// On tall screens the first page may not scroll, so no scroll event would
+  /// ever request page two.
+  void _fillViewport() {
+    if (!mounted || !_scrollController.hasClients) return;
+    if (_scrollController.position.extentAfter < _prefetchExtent) {
+      _bloc.add(const ProductListNextPageRequested());
+    }
+  }
+
+  Future<void> _onRefresh() async {
+    _bloc.add(const ProductListRefreshed());
+    await _bloc.stream.firstWhere(
+      (s) => !s.isRefreshing && s.status != ProductListStatus.loading,
+    );
   }
 
   Future<void> _openSort() async {
@@ -39,82 +77,145 @@ class _ProductsPageState extends State<ProductsPage> {
   /// Picking a category replaces any search (the API can't combine them).
   void _selectCategory(String? slug) {
     _searchController.clear();
+    FocusScope.of(context).unfocus();
     _bloc.add(ProductCategorySelected(slug));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ShopSphere'),
-        actions: [
-          BlocSelector<ProductListBloc, ProductListState, ProductSort>(
-            selector: (state) => state.query.sort,
-            builder: (context, sort) => IconButton(
-              tooltip: 'Sort products',
-              onPressed: () => unawaited(_openSort()),
-              icon: Badge(
-                isLabelVisible: sort != ProductSort.recommended,
-                smallSize: 8,
-                child: const Icon(Icons.swap_vert_rounded),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ProductListBloc, ProductListState>(
+          listenWhen: (previous, current) =>
+              current.refreshError != null &&
+              previous.refreshError != current.refreshError,
+          listener: (context, state) => ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(SnackBar(content: Text(state.refreshError!))),
+        ),
+        BlocListener<ProductListBloc, ProductListState>(
+          listenWhen: (previous, current) =>
+              previous.products.length != current.products.length,
+          listener: (_, _) => WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _fillViewport(),
+          ),
+        ),
+      ],
+      child: Scaffold(
+        body: SafeArea(
+          bottom: false,
+          child: RefreshIndicator(
+            onRefresh: _onRefresh,
+            edgeOffset: 120,
+            child: BlocBuilder<ProductListBloc, ProductListState>(
+              buildWhen: (previous, current) =>
+                  previous.status != current.status ||
+                  previous.query != current.query ||
+                  previous.products != current.products ||
+                  previous.isLoadingMore != current.isLoadingMore ||
+                  previous.loadMoreError != current.loadMoreError ||
+                  previous.hasReachedEnd != current.hasReachedEnd,
+              builder: (context, state) => CustomScrollView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  HomeSliverAppBar(
+                    searchController: _searchController,
+                    onSearchChanged: (text) =>
+                        _bloc.add(ProductSearchChanged(text)),
+                    sort: state.query.sort,
+                    onSortPressed: () => unawaited(_openSort()),
+                  ),
+                  if (!state.query.isFiltered)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: AppSpacing.xs),
+                        child: PromoCarousel(onShop: _selectCategory),
+                      ),
+                    ),
+                  SliverToBoxAdapter(
+                    child: CategoryChips(
+                      selectedSlug: state.query.categorySlug,
+                      onSelected: _selectCategory,
+                    ),
+                  ),
+                  SliverToBoxAdapter(child: _SectionTitle(state: state)),
+                  ..._content(state),
+                ],
               ),
             ),
           ),
-          const SizedBox(width: AppSpacing.xs),
-        ],
-      ),
-      body: BlocListener<ProductListBloc, ProductListState>(
-        listenWhen: (previous, current) =>
-            current.refreshError != null &&
-            previous.refreshError != current.refreshError,
-        listener: (context, state) => ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(SnackBar(content: Text(state.refreshError!))),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.xs,
-                AppSpacing.lg,
-                AppSpacing.sm,
-              ),
-              child: ProductSearchField(
-                controller: _searchController,
-                onChanged: (text) => _bloc.add(ProductSearchChanged(text)),
-              ),
-            ),
-            BlocSelector<ProductListBloc, ProductListState, String?>(
-              selector: (state) => state.query.categorySlug,
-              builder: (context, slug) => CategoryChips(
-                selectedSlug: slug,
-                onSelected: _selectCategory,
-              ),
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Expanded(
-              child: BlocBuilder<ProductListBloc, ProductListState>(
-                buildWhen: (previous, current) =>
-                    previous.status != current.status ||
-                    previous.query != current.query,
-                builder: (context, state) => switch (state.status) {
-                  ProductListStatus.initial ||
-                  ProductListStatus.loading => const ProductGridSkeleton(),
-                  ProductListStatus.failure => ErrorView(
-                    title: "Couldn't load products",
-                    message: state.errorMessage ?? '',
-                    onRetry: () => _bloc.add(const ProductListStarted()),
-                  ),
-                  ProductListStatus.empty => _EmptyResults(
-                    query: state.query,
-                    onClearFilters: () => _selectCategory(null),
-                  ),
-                  ProductListStatus.success => const ProductGrid(),
-                },
-              ),
-            ),
-          ],
         ),
+      ),
+    );
+  }
+
+  List<Widget> _content(ProductListState state) => switch (state.status) {
+    ProductListStatus.initial ||
+    ProductListStatus.loading => const [ProductGridSkeletonSliver()],
+    ProductListStatus.failure => [
+      SliverFillRemaining(
+        hasScrollBody: false,
+        child: ErrorView(
+          title: "Couldn't load products",
+          message: state.errorMessage ?? '',
+          onRetry: () => _bloc.add(const ProductListStarted()),
+        ),
+      ),
+    ],
+    ProductListStatus.empty => [
+      SliverFillRemaining(
+        hasScrollBody: false,
+        child: _EmptyResults(
+          query: state.query,
+          onClearFilters: () => _selectCategory(null),
+        ),
+      ),
+    ],
+    ProductListStatus.success => [ProductGridSliver(state: state)],
+  };
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.state});
+
+  final ProductListState state;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final query = state.query;
+    final title = query.isSearching
+        ? 'Results for "${query.search}"'
+        : query.categorySlug != null
+        ? CategoryStyle.labelFor(query.categorySlug!)
+        : 'All products';
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.xs,
+        AppSpacing.lg,
+        AppSpacing.md,
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.titleLarge,
+            ),
+          ),
+          if (query.sort != ProductSort.recommended)
+            Text(
+              query.sort.label,
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
+        ],
       ),
     );
   }
