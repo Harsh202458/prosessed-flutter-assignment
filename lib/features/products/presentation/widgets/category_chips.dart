@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/widgets/shimmer_box.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
+import 'package:shopsphere/features/products/presentation/widgets/category_style.dart';
 
 /// Horizontally scrolling category filter. `null` means "All".
 class CategoryChips extends StatelessWidget {
@@ -15,7 +16,7 @@ class CategoryChips extends StatelessWidget {
   final String? selectedSlug;
   final ValueChanged<String?> onSelected;
 
-  static const double _height = 48;
+  static const double _height = 56;
 
   @override
   Widget build(BuildContext context) {
@@ -32,19 +33,34 @@ class CategoryChips extends StatelessWidget {
             ),
           ]),
           CategoriesStatus.success => _list([
-            _chip('All', null),
-            for (final c in state.categories) _chip(c.name, c.slug),
+            _chip(context, 'All', null, Icons.grid_view_rounded),
+            for (final c in state.categories)
+              _chip(context, c.name, c.slug, CategoryStyle.iconFor(c.slug)),
           ]),
         },
       ),
     );
   }
 
-  Widget _chip(String label, String? slug) => ChoiceChip(
-    label: Text(label),
-    selected: selectedSlug == slug,
-    onSelected: (_) => onSelected(slug),
-  );
+  Widget _chip(
+    BuildContext context,
+    String label,
+    String? slug,
+    IconData icon,
+  ) {
+    final scheme = Theme.of(context).colorScheme;
+    final selected = selectedSlug == slug;
+    return ChoiceChip(
+      avatar: Icon(
+        icon,
+        size: 18,
+        color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
+      ),
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onSelected(slug),
+    );
+  }
 
   Widget _list(List<Widget> chips) => ListView.separated(
     scrollDirection: Axis.horizontal,
@@ -67,7 +83,7 @@ class _ChipsSkeleton extends StatelessWidget {
       itemCount: 6,
       separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
       itemBuilder: (_, _) => const Center(
-        child: ShimmerBox(width: 84, height: 32, radius: AppRadius.xl),
+        child: ShimmerBox(width: 96, height: 36, radius: AppRadius.xl),
       ),
     ),
   );
