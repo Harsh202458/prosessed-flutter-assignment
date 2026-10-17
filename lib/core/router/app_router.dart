@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopsphere/core/di/injection.dart';
+import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/router/stream_listenable.dart';
 import 'package:shopsphere/core/widgets/adaptive_shell.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
@@ -11,18 +12,13 @@ import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
 import 'package:shopsphere/features/auth/presentation/pages/splash_page.dart';
 import 'package:shopsphere/features/cart/presentation/pages/cart_page.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
+import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
+import 'package:shopsphere/features/products/presentation/pages/product_details_page.dart';
 import 'package:shopsphere/features/products/presentation/pages/products_page.dart';
 import 'package:shopsphere/features/profile/presentation/pages/profile_page.dart';
-
-abstract final class AppRoutes {
-  static const String splash = '/splash';
-  static const String login = '/login';
-  static const String products = '/products';
-  static const String cart = '/cart';
-  static const String profile = '/profile';
-}
 
 const _destinations = [
   ShellDestination(
@@ -83,6 +79,27 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
                 ],
                 child: const ProductsPage(),
               ),
+              routes: [
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) {
+                    final id = int.tryParse(state.pathParameters['id'] ?? '');
+                    return BlocProvider(
+                      create: (_) {
+                        final cubit = sl<ProductDetailsCubit>();
+                        unawaited(cubit.load(id));
+                        return cubit;
+                      },
+                      child: ProductDetailsPage(
+                        productId: id,
+                        preview: state.extra is Product
+                            ? state.extra! as Product
+                            : null,
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

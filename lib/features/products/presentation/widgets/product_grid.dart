@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/widgets/fade_slide_in.dart';
@@ -34,7 +38,15 @@ class ProductGridSliver extends StatelessWidget {
                   return FadeSlideIn(
                     key: ValueKey(product.id),
                     delayFactor: (index % columns) * 0.12,
-                    child: ProductCard(product: product),
+                    child: ProductCard(
+                      product: product,
+                      onTap: () => unawaited(
+                        context.push(
+                          AppRoutes.productDetails(product.id),
+                          extra: product,
+                        ),
+                      ),
+                    ),
                   );
                 },
               );

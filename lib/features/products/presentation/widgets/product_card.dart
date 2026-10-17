@@ -5,6 +5,7 @@ import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/widgets/category_style.dart';
 import 'package:shopsphere/features/products/presentation/widgets/price_view.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_image.dart';
+import 'package:shopsphere/features/products/presentation/widgets/product_image_carousel.dart';
 import 'package:shopsphere/features/products/presentation/widgets/rating_view.dart';
 
 class ProductCard extends StatelessWidget {
@@ -62,11 +63,14 @@ class ProductCard extends StatelessWidget {
                 children: [
                   ColoredBox(
                     color: scheme.surfaceContainerHighest,
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: ProductImage(
-                        url: product.thumbnail,
-                        semanticLabel: product.title,
+                    child: Hero(
+                      tag: productHeroTag(product.id),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppSpacing.md),
+                        child: ProductImage(
+                          url: product.thumbnail,
+                          semanticLabel: product.title,
+                        ),
                       ),
                     ),
                   ),

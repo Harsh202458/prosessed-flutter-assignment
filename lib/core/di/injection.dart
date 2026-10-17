@@ -20,9 +20,11 @@ import 'package:shopsphere/features/products/data/datasources/product_remote_dat
 import 'package:shopsphere/features/products/data/repositories/product_repository_impl.dart';
 import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_categories.dart';
+import 'package:shopsphere/features/products/domain/usecases/get_product_details.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_products.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
+import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
 
 /// Global service locator. Only the composition root and route builders use
 /// it; widgets receive their blocs through `BlocProvider`.
@@ -83,6 +85,8 @@ void _registerProducts() {
     )
     ..registerLazySingleton(() => GetProducts(sl()))
     ..registerLazySingleton(() => GetCategories(sl()))
+    ..registerLazySingleton(() => GetProductDetails(sl()))
     ..registerFactory(() => ProductListBloc(sl()))
-    ..registerFactory(() => CategoriesCubit(sl()));
+    ..registerFactory(() => CategoriesCubit(sl()))
+    ..registerFactory(() => ProductDetailsCubit(sl()));
 }
