@@ -25,16 +25,20 @@ class ProductCard extends StatelessWidget {
     double line(TextStyle? style) =>
         scaler.scale(style?.fontSize ?? 14) * (style?.height ?? 1.3);
 
-    final priceRow = [
-      line(theme.titleMedium),
+    double tallest(List<double> heights) =>
+        heights.reduce((a, b) => a > b ? a : b);
+
+    // Top row: category/brand next to the rating (whose star icon is not
+    // text-scaled). Bottom row: sale price next to the struck list price.
+    final ratingIcon = (theme.bodySmall?.fontSize ?? 12) * 1.4;
+    final topRow = tallest([
+      line(theme.labelSmall),
       line(theme.bodySmall),
-    ].reduce((a, b) => a > b ? a : b);
+      ratingIcon,
+    ]);
+    final priceRow = tallest([line(theme.titleMedium), line(theme.bodySmall)]);
     final textBlock =
-        line(theme.labelSmall) +
-        _gap +
-        line(theme.titleSmall) * 2 +
-        _gap +
-        priceRow;
+        topRow + _gap + line(theme.titleSmall) * 2 + _gap + priceRow;
     return width + _padding * 2 + textBlock + AppSpacing.xxs;
   }
 
@@ -102,13 +106,21 @@ class ProductCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    _subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: scheme.onSurfaceVariant,
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          _subtitle,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                      RatingView(rating: product.rating),
+                    ],
                   ),
                   const SizedBox(height: _gap),
                   Text(
@@ -118,13 +130,7 @@ class ProductCard extends StatelessWidget {
                     style: theme.textTheme.titleSmall,
                   ),
                   const SizedBox(height: _gap),
-                  Row(
-                    children: [
-                      Expanded(child: PriceView(product: product)),
-                      const SizedBox(width: AppSpacing.xs),
-                      RatingView(rating: product.rating),
-                    ],
-                  ),
+                  PriceView(product: product),
                 ],
               ),
             ),
