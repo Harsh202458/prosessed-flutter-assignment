@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -9,6 +11,8 @@ import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
 import 'package:shopsphere/features/auth/presentation/pages/splash_page.dart';
 import 'package:shopsphere/features/cart/presentation/pages/cart_page.dart';
+import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
+import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:shopsphere/features/products/presentation/pages/products_page.dart';
 import 'package:shopsphere/features/profile/presentation/pages/profile_page.dart';
 
@@ -63,7 +67,22 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.products,
-              builder: (context, state) => const ProductsPage(),
+              builder: (context, state) => MultiBlocProvider(
+                providers: [
+                  BlocProvider(
+                    create: (_) =>
+                        sl<ProductListBloc>()..add(const ProductListStarted()),
+                  ),
+                  BlocProvider(
+                    create: (_) {
+                      final cubit = sl<CategoriesCubit>();
+                      unawaited(cubit.load());
+                      return cubit;
+                    },
+                  ),
+                ],
+                child: const ProductsPage(),
+              ),
             ),
           ],
         ),

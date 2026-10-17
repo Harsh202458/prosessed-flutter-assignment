@@ -16,6 +16,13 @@ import 'package:shopsphere/features/auth/domain/usecases/login.dart';
 import 'package:shopsphere/features/auth/domain/usecases/logout.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
+import 'package:shopsphere/features/products/data/datasources/product_remote_data_source.dart';
+import 'package:shopsphere/features/products/data/repositories/product_repository_impl.dart';
+import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
+import 'package:shopsphere/features/products/domain/usecases/get_categories.dart';
+import 'package:shopsphere/features/products/domain/usecases/get_products.dart';
+import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
+import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 
 /// Global service locator. Only the composition root and route builders use
 /// it; widgets receive their blocs through `BlocProvider`.
@@ -25,6 +32,7 @@ Future<void> configureDependencies() async {
   await Hive.initFlutter();
   _registerCore();
   _registerAuth();
+  _registerProducts();
   sl.registerLazySingleton<GoRouter>(() => createRouter(sl()));
 }
 
@@ -63,4 +71,18 @@ void _registerAuth() {
       () => AuthBloc(checkSession: sl(), logout: sl(), sessionExpiry: sl()),
     )
     ..registerFactory(() => LoginCubit(sl()));
+}
+
+void _registerProducts() {
+  sl
+    ..registerLazySingleton<ProductRemoteDataSource>(
+      () => ProductRemoteDataSourceImpl(sl()),
+    )
+    ..registerLazySingleton<ProductRepository>(
+      () => ProductRepositoryImpl(sl()),
+    )
+    ..registerLazySingleton(() => GetProducts(sl()))
+    ..registerLazySingleton(() => GetCategories(sl()))
+    ..registerFactory(() => ProductListBloc(sl()))
+    ..registerFactory(() => CategoriesCubit(sl()));
 }
