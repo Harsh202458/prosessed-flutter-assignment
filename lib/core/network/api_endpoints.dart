@@ -2,6 +2,9 @@
 abstract final class ApiEndpoints {
   static const String baseUrl = 'https://dummyjson.com';
 
+  /// Access-token lifetime requested on login and refresh.
+  static const int sessionDurationMins = 30;
+
   // Auth
   static const String login = '/auth/login';
   static const String me = '/auth/me';
