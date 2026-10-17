@@ -23,6 +23,14 @@ enum WindowSize {
 
   bool get isCompact => this == WindowSize.compact;
   bool get isExpanded => this == WindowSize.expanded;
+
+  /// Product grid columns for a content area of [width] dp: 2 on phones,
+  /// 3–4 on tablets.
+  static int gridColumns(double width) {
+    if (width < mediumMin) return 2;
+    if (width < 840) return 3;
+    return 4;
+  }
 }
 
 extension WindowSizeContext on BuildContext {
