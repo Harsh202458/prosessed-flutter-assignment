@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:shopsphere/core/network/api_endpoints.dart';
 import 'package:shopsphere/core/network/dio_exception_mapper.dart';
 import 'package:shopsphere/features/products/data/models/category_model.dart';
+import 'package:shopsphere/features/products/data/models/product_model.dart';
 import 'package:shopsphere/features/products/data/models/product_page_model.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
 
@@ -13,6 +14,8 @@ abstract interface class ProductRemoteDataSource {
   });
 
   Future<List<CategoryModel>> getCategories();
+
+  Future<ProductModel> getProductById(int id);
 }
 
 class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
@@ -56,6 +59,12 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
       for (final item in json)
         CategoryModel.fromJson(item as Map<String, dynamic>),
     ];
+  }
+
+  @override
+  Future<ProductModel> getProductById(int id) async {
+    final json = await _get<Map<String, dynamic>>(ApiEndpoints.product(id));
+    return ProductModel.fromJson(json);
   }
 
   Map<String, String> _sortParams(ProductSort sort) => switch (sort) {
