@@ -10,18 +10,28 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     return Scaffold(
+      backgroundColor: scheme.primary,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const AppLogo(size: 96),
+            const AppLogo(size: 96, inverted: true),
             const SizedBox(height: AppSpacing.lg),
-            Text('ShopSphere', style: theme.textTheme.headlineSmall),
+            Text(
+              'ShopSphere',
+              style: theme.textTheme.headlineMedium?.copyWith(
+                color: scheme.onPrimary,
+              ),
+            ),
             const SizedBox(height: AppSpacing.xxl),
-            const SizedBox.square(
+            SizedBox.square(
               dimension: 28,
-              child: CircularProgressIndicator(strokeWidth: 3),
+              child: CircularProgressIndicator(
+                strokeWidth: 3,
+                color: scheme.onPrimary,
+              ),
             ),
           ],
         ),
