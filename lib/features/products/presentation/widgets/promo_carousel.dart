@@ -26,7 +26,7 @@ class _Promo {
 const _promos = [
   _Promo(
     eyebrow: 'Glow-up week',
-    title: 'Beauty picks up to 20% off',
+    title: 'Beauty bestsellers on sale',
     categorySlug: 'beauty',
     icon: Icons.face_retouching_natural_outlined,
     tone: _PromoTone.primary,
