@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
+import 'package:shopsphere/core/widgets/app_snack_bar.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
 import 'package:shopsphere/features/cart/domain/entities/cart_item.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
@@ -19,17 +20,12 @@ class CartPage extends StatelessWidget {
     final cubit = context.read<CartCubit>();
     final index = cubit.state.items.indexOf(item);
     unawaited(cubit.remove(item.productId));
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('Removed ${item.title}'),
-          action: SnackBarAction(
-            label: 'Undo',
-            onPressed: () => unawaited(cubit.restore(item, index)),
-          ),
-        ),
-      );
+    showAppSnackBar(
+      context,
+      'Removed ${item.title}',
+      actionLabel: 'Undo',
+      onAction: () => unawaited(cubit.restore(item, index)),
+    );
   }
 
   Future<void> _confirmClear(BuildContext context) async {
@@ -62,29 +58,23 @@ class CartPage extends StatelessWidget {
           (current.storageError != null &&
               previous.storageError != current.storageError),
       listener: (context, state) {
-        final messenger = ScaffoldMessenger.of(context);
+        final cubit = context.read<CartCubit>();
         if (state.checkoutStatus == CheckoutStatus.success &&
             state.order != null) {
-          messenger.hideCurrentSnackBar();
-          context.go(AppRoutes.orderConfirmation, extra: state.order);
-          context.read<CartCubit>().acknowledgeOrder();
+          hideAppSnackBar(context);
+          unawaited(
+            context.push(AppRoutes.orderConfirmation, extra: state.order),
+          );
+          cubit.acknowledgeOrder();
         } else if (state.checkoutStatus == CheckoutStatus.failure) {
-          messenger
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(
-                  "Couldn't place your order. ${state.checkoutError ?? ''}",
-                ),
-                action: SnackBarAction(
-                  label: 'Retry',
-                  onPressed: () =>
-                      unawaited(context.read<CartCubit>().placeOrder()),
-                ),
-              ),
-            );
+          showAppSnackBar(
+            context,
+            "Couldn't place your order. ${state.checkoutError ?? ''}",
+            actionLabel: 'Retry',
+            onAction: () => unawaited(cubit.placeOrder()),
+          );
         } else if (state.storageError != null) {
-          messenger.showSnackBar(SnackBar(content: Text(state.storageError!)));
+          showAppSnackBar(context, state.storageError!);
         }
       },
       builder: (context, state) {
@@ -162,7 +152,10 @@ class _CartContent extends StatelessWidget {
     final summary = CartSummary(
       totals: state.totals,
       isPlacingOrder: state.isPlacingOrder,
-      onPlaceOrder: () => unawaited(cubit.placeOrder()),
+      onPlaceOrder: () {
+        hideAppSnackBar(context);
+        unawaited(cubit.placeOrder());
+      },
     );
 
     return LayoutBuilder(

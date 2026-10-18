@@ -58,6 +58,15 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
         child: const LoginPage(),
       ),
     ),
+    // Full screen above the shell, so the Cart tab keeps showing the cart
+    // (not a stale confirmation) after the user continues shopping.
+    GoRoute(
+      path: AppRoutes.orderConfirmation,
+      redirect: (context, state) =>
+          state.extra is OrderConfirmation ? null : AppRoutes.cart,
+      builder: (context, state) =>
+          OrderConfirmationPage(order: state.extra! as OrderConfirmation),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) =>
           BlocSelector<CartCubit, CartState, int>(
@@ -97,6 +106,11 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
                     return BlocProvider(
                       create: (_) {
                         final cubit = sl<ProductDetailsCubit>();
+                        if (id != null) {
+                          cubit.syncCartQuantity(
+                            context.read<CartCubit>().state.quantityOf(id),
+                          );
+                        }
                         unawaited(cubit.load(id));
                         return cubit;
                       },
@@ -118,16 +132,6 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
             GoRoute(
               path: AppRoutes.cart,
               builder: (context, state) => const CartPage(),
-              routes: [
-                GoRoute(
-                  path: 'confirmation',
-                  redirect: (context, state) =>
-                      state.extra is OrderConfirmation ? null : AppRoutes.cart,
-                  builder: (context, state) => OrderConfirmationPage(
-                    order: state.extra! as OrderConfirmation,
-                  ),
-                ),
-              ],
             ),
           ],
         ),
