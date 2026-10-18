@@ -4,7 +4,9 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shopsphere/core/error/exceptions.dart';
 import 'package:shopsphere/core/error/failures.dart';
 import 'package:shopsphere/core/error/result.dart';
+import 'package:shopsphere/features/products/data/datasources/product_local_data_source.dart';
 import 'package:shopsphere/features/products/data/datasources/product_remote_data_source.dart';
+import 'package:shopsphere/features/products/data/models/category_model.dart';
 import 'package:shopsphere/features/products/data/models/product_model.dart';
 import 'package:shopsphere/features/products/data/models/product_page_model.dart';
 import 'package:shopsphere/features/products/data/repositories/product_repository_impl.dart';
@@ -16,18 +18,32 @@ import '../../../fixtures/fixture_reader.dart';
 
 class _MockRemote extends Mock implements ProductRemoteDataSource {}
 
+class _MockLocal extends Mock implements ProductLocalDataSource {}
+
 class _MockDio extends Mock implements Dio {}
 
 void main() {
-  setUpAll(() => registerFallbackValue(const ProductQuery()));
+  setUpAll(() {
+    registerFallbackValue(const ProductQuery());
+    registerFallbackValue(
+      const ProductPageModel(products: [], total: 0, skip: 0, limit: 0),
+    );
+    registerFallbackValue(<CategoryModel>[]);
+  });
 
   group('ProductRepositoryImpl', () {
     late _MockRemote remote;
+    late _MockLocal local;
     late ProductRepositoryImpl repository;
 
     setUp(() {
       remote = _MockRemote();
-      repository = ProductRepositoryImpl(remote);
+      local = _MockLocal();
+      repository = ProductRepositoryImpl(remote: remote, local: local);
+      when(() => local.writeHomePage(any())).thenAnswer((_) async {});
+      when(() => local.writeCategories(any())).thenAnswer((_) async {});
+      when(() => local.readHomePage()).thenAnswer((_) async => null);
+      when(() => local.readCategories()).thenAnswer((_) async => null);
     });
 
     When<Future<ProductPageModel>> stubGetProducts() => when(
