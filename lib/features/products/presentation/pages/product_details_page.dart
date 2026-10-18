@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +9,7 @@ import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
 import 'package:shopsphere/core/widgets/shimmer_box.dart';
+import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
 import 'package:shopsphere/features/products/presentation/widgets/add_to_cart_bar.dart';
@@ -25,6 +28,24 @@ class ProductDetailsPage extends StatelessWidget {
   /// The list item that was tapped, shown instantly while the full product
   /// loads so the Hero animation has something to land on.
   final Product? preview;
+
+  void _addToCart(BuildContext context, ProductDetailsState state) {
+    final product = state.product!;
+    final quantity = state.quantity;
+    unawaited(context.read<CartCubit>().add(product, quantity));
+    context.read<ProductDetailsCubit>().resetQuantity();
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('Added $quantity × ${product.title} to your cart'),
+          action: SnackBarAction(
+            label: 'View cart',
+            onPressed: () => context.go(AppRoutes.cart),
+          ),
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +82,7 @@ class ProductDetailsPage extends StatelessWidget {
                   state: state,
                   onDecrement: cubit.decrement,
                   onIncrement: cubit.increment,
-                  onAddToCart: cubit.resetQuantity,
+                  onAddToCart: () => _addToCart(context, state),
                 )
               : null,
         );
