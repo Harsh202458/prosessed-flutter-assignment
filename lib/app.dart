@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/network/connectivity_cubit.dart';
 import 'package:shopsphere/core/theme/app_theme.dart';
 import 'package:shopsphere/core/theme/theme_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
@@ -16,6 +17,7 @@ class ShopSphereApp extends StatelessWidget {
     required this.cartCubit,
     required this.profileCubit,
     required this.themeCubit,
+    required this.connectivityCubit,
     super.key,
   });
 
@@ -24,6 +26,7 @@ class ShopSphereApp extends StatelessWidget {
   final CartCubit cartCubit;
   final ProfileCubit profileCubit;
   final ThemeCubit themeCubit;
+  final ConnectivityCubit connectivityCubit;
 
   void _onAuthChanged(BuildContext context, AuthState state) {
     switch (state.status) {
@@ -47,6 +50,7 @@ class ShopSphereApp extends StatelessWidget {
         BlocProvider.value(value: cartCubit),
         BlocProvider.value(value: profileCubit),
         BlocProvider.value(value: themeCubit),
+        BlocProvider.value(value: connectivityCubit),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (previous, current) => previous.status != current.status,
