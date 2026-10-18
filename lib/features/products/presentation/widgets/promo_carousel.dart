@@ -122,7 +122,9 @@ class _PromoCarouselState extends State<PromoCarousel> {
         line(text.titleLarge) * 2 +
         AppSpacing.md +
         line(text.labelLarge) +
-        AppSpacing.sm * 2;
+        AppSpacing.sm * 2 +
+        // Headroom for sub-pixel rounding of the measured text.
+        AppSpacing.xs;
   }
 
   @override
