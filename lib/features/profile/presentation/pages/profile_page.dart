@@ -9,6 +9,7 @@ import 'package:shopsphere/core/widgets/shimmer_box.dart';
 import 'package:shopsphere/features/auth/domain/entities/user.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:shopsphere/features/profile/presentation/widgets/appearance_selector.dart';
 import 'package:shopsphere/features/profile/presentation/widgets/user_avatar.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -116,6 +117,18 @@ class ProfilePage extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(height: AppSpacing.lg),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: AppSpacing.xs,
+                            bottom: AppSpacing.sm,
+                          ),
+                          child: Text(
+                            'Appearance',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        const AppearanceSelector(),
                         const SizedBox(height: AppSpacing.xl),
                         OutlinedButton.icon(
                           onPressed: () => unawaited(_confirmLogout(context)),

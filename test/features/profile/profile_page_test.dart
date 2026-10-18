@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shopsphere/core/theme/app_theme.dart';
+import 'package:shopsphere/core/theme/theme_cubit.dart';
 import 'package:shopsphere/features/auth/domain/entities/user.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
@@ -15,9 +16,12 @@ class _MockProfileCubit extends MockCubit<ProfileState>
 class _MockAuthBloc extends MockBloc<AuthEvent, AuthState>
     implements AuthBloc {}
 
+class _MockThemeCubit extends MockCubit<ThemeMode> implements ThemeCubit {}
+
 void main() {
   late _MockProfileCubit profileCubit;
   late _MockAuthBloc authBloc;
+  late _MockThemeCubit themeCubit;
 
   const user = User(
     id: 1,
@@ -34,6 +38,8 @@ void main() {
   setUp(() {
     profileCubit = _MockProfileCubit();
     authBloc = _MockAuthBloc();
+    themeCubit = _MockThemeCubit();
+    when(() => themeCubit.state).thenReturn(ThemeMode.system);
     when(() => authBloc.state).thenReturn(const AuthState.authenticated());
   });
 
@@ -50,6 +56,7 @@ void main() {
           providers: [
             BlocProvider<ProfileCubit>.value(value: profileCubit),
             BlocProvider<AuthBloc>.value(value: authBloc),
+            BlocProvider<ThemeCubit>.value(value: themeCubit),
           ],
           child: const ProfilePage(),
         ),
