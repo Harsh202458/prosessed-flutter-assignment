@@ -12,6 +12,7 @@ import 'package:shopsphere/features/auth/data/datasources/auth_remote_data_sourc
 import 'package:shopsphere/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:shopsphere/features/auth/domain/repositories/auth_repository.dart';
 import 'package:shopsphere/features/auth/domain/usecases/check_session.dart';
+import 'package:shopsphere/features/auth/domain/usecases/get_current_user.dart';
 import 'package:shopsphere/features/auth/domain/usecases/login.dart';
 import 'package:shopsphere/features/auth/domain/usecases/logout.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
@@ -31,6 +32,7 @@ import 'package:shopsphere/features/products/domain/usecases/get_products.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
+import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 
 /// Global service locator. Only the composition root and route builders use
 /// it; widgets receive their blocs through `BlocProvider`.
@@ -77,6 +79,8 @@ void _registerAuth() {
     ..registerLazySingleton(() => Login(sl()))
     ..registerLazySingleton(() => Logout(sl()))
     ..registerLazySingleton(() => CheckSession(sl()))
+    ..registerLazySingleton(() => GetCurrentUser(sl()))
+    ..registerLazySingleton(() => ProfileCubit(sl()))
     ..registerLazySingleton(
       () => AuthBloc(checkSession: sl(), logout: sl(), sessionExpiry: sl()),
     )
