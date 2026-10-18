@@ -5,6 +5,7 @@ abstract final class AppRoutes {
   static const String login = '/login';
   static const String products = '/products';
   static const String cart = '/cart';
+  static const String orderConfirmation = '/cart/confirmation';
   static const String profile = '/profile';
 
   static String productDetails(int id) => '$products/$id';
