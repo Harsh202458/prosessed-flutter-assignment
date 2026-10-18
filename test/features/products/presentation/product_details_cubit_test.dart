@@ -84,6 +84,35 @@ void main() {
   );
 
   blocTest<ProductDetailsCubit, ProductDetailsState>(
+    'limits the quantity to stock minus what is already in the cart',
+    build: () => ProductDetailsCubit(getProductDetails),
+    seed: () => const ProductDetailsState(
+      status: ProductDetailsStatus.success,
+      product: product,
+      quantity: 2,
+    ),
+    act: (cubit) => cubit
+      ..syncCartQuantity(1)
+      ..increment(),
+    verify: (cubit) {
+      expect(cubit.state.available, 1);
+      expect(cubit.state.quantity, 1);
+      expect(cubit.state.canIncrement, isFalse);
+    },
+  );
+
+  blocTest<ProductDetailsCubit, ProductDetailsState>(
+    'cannot add once the cart holds all of the stock',
+    build: () => ProductDetailsCubit(getProductDetails),
+    seed: () => const ProductDetailsState(
+      status: ProductDetailsStatus.success,
+      product: product,
+    ),
+    act: (cubit) => cubit.syncCartQuantity(2),
+    verify: (cubit) => expect(cubit.state.canAdd, isFalse),
+  );
+
+  blocTest<ProductDetailsCubit, ProductDetailsState>(
     'keeps the quantity between 1 and the available stock',
     build: () => ProductDetailsCubit(getProductDetails),
     seed: () => const ProductDetailsState(
