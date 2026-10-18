@@ -165,6 +165,28 @@ void main() {
   );
 
   blocTest<CartCubit, CartState>(
+    'can place another order after the first one is confirmed',
+    setUp: () => when(() => placeOrder(any())).thenAnswer(
+      (_) async => const Success(
+        OrderConfirmation(orderId: 209, itemCount: 1, total: 9),
+      ),
+    ),
+    build: build,
+    seed: () => ready(const [_item]),
+    act: (cubit) async {
+      await cubit.placeOrder();
+      cubit.acknowledgeOrder();
+      await cubit.add(_product, 1);
+      await cubit.placeOrder();
+    },
+    verify: (cubit) {
+      verify(() => placeOrder(any())).called(2);
+      expect(cubit.state.checkoutStatus, CheckoutStatus.success);
+      expect(cubit.state.isEmpty, isTrue);
+    },
+  );
+
+  blocTest<CartCubit, CartState>(
     'keeps the cart and reports the error when checkout fails',
     setUp: () => when(
       () => placeOrder(any()),
