@@ -1,21 +1,25 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/widgets/fade_slide_in.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_card.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_grid_layout.dart';
 
 /// The loaded products plus the infinite-scroll footer, as slivers.
 class ProductGridSliver extends StatelessWidget {
-  const ProductGridSliver({required this.state, super.key});
+  const ProductGridSliver({
+    required this.state,
+    required this.onProductTap,
+    this.selectedProductId,
+    super.key,
+  });
 
   final ProductListState state;
+  final ValueChanged<Product> onProductTap;
+  final int? selectedProductId;
 
   @override
   Widget build(BuildContext context) {
@@ -40,12 +44,8 @@ class ProductGridSliver extends StatelessWidget {
                     delayFactor: (index % columns) * 0.12,
                     child: ProductCard(
                       product: product,
-                      onTap: () => unawaited(
-                        context.push(
-                          AppRoutes.productDetails(product.id),
-                          extra: product,
-                        ),
-                      ),
+                      selected: product.id == selectedProductId,
+                      onTap: () => onProductTap(product),
                     ),
                   );
                 },

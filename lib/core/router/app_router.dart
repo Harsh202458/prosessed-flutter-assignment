@@ -96,32 +96,25 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
                     },
                   ),
                 ],
-                child: const ProductsPage(),
+                child: ProductsPage(
+                  detailsBuilder: (product, onClose) => _productDetails(
+                    context,
+                    id: product.id,
+                    preview: product,
+                    onClose: onClose,
+                  ),
+                ),
               ),
               routes: [
                 GoRoute(
                   path: ':id',
-                  builder: (context, state) {
-                    final id = int.tryParse(state.pathParameters['id'] ?? '');
-                    return BlocProvider(
-                      create: (_) {
-                        final cubit = sl<ProductDetailsCubit>();
-                        if (id != null) {
-                          cubit.syncCartQuantity(
-                            context.read<CartCubit>().state.quantityOf(id),
-                          );
-                        }
-                        unawaited(cubit.load(id));
-                        return cubit;
-                      },
-                      child: ProductDetailsPage(
-                        productId: id,
-                        preview: state.extra is Product
-                            ? state.extra! as Product
-                            : null,
-                      ),
-                    );
-                  },
+                  builder: (context, state) => _productDetails(
+                    context,
+                    id: int.tryParse(state.pathParameters['id'] ?? ''),
+                    preview: state.extra is Product
+                        ? state.extra! as Product
+                        : null,
+                  ),
                 ),
               ],
             ),
@@ -158,4 +151,29 @@ String? _redirect(AuthStatus status, String location) {
     AuthStatus.unauthenticated => onLogin ? null : AppRoutes.login,
     AuthStatus.authenticated => onSplash || onLogin ? AppRoutes.products : null,
   };
+}
+
+/// Product details with its own cubit, synced with what's already in the
+/// cart. Used both as a full page and as the master-detail pane.
+Widget _productDetails(
+  BuildContext context, {
+  required int? id,
+  Product? preview,
+  VoidCallback? onClose,
+}) {
+  return BlocProvider(
+    create: (_) {
+      final cubit = sl<ProductDetailsCubit>();
+      if (id != null) {
+        cubit.syncCartQuantity(context.read<CartCubit>().state.quantityOf(id));
+      }
+      unawaited(cubit.load(id));
+      return cubit;
+    },
+    child: ProductDetailsPage(
+      productId: id,
+      preview: preview,
+      onClose: onClose,
+    ),
+  );
 }

@@ -2,10 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
+import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/widgets/app_snack_bar.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/widgets/category_chips.dart';
@@ -16,8 +20,16 @@ import 'package:shopsphere/features/products/presentation/widgets/product_grid_s
 import 'package:shopsphere/features/products/presentation/widgets/promo_carousel.dart';
 import 'package:shopsphere/features/products/presentation/widgets/sort_sheet.dart';
 
+/// Builds the details for [product]; `onClose` dismisses the detail pane.
+typedef ProductDetailsBuilder =
+    Widget Function(Product product, VoidCallback onClose);
+
 class ProductsPage extends StatefulWidget {
-  const ProductsPage({super.key});
+  const ProductsPage({required this.detailsBuilder, super.key});
+
+  /// Used for the detail pane on expanded widths (> 1024 dp). Narrower
+  /// screens navigate to a full details page instead.
+  final ProductDetailsBuilder detailsBuilder;
 
   @override
   State<ProductsPage> createState() => _ProductsPageState();
@@ -29,6 +41,9 @@ class _ProductsPageState extends State<ProductsPage> {
 
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
+
+  /// Product shown in the detail pane in master-detail mode.
+  Product? _selected;
 
   ProductListBloc get _bloc => context.read<ProductListBloc>();
 
@@ -75,6 +90,16 @@ class _ProductsPageState extends State<ProductsPage> {
     if (selected != null && mounted) _bloc.add(ProductSortChanged(selected));
   }
 
+  void _openProduct(Product product) {
+    if (context.windowSize.isExpanded) {
+      setState(() => _selected = product);
+    } else {
+      unawaited(
+        context.push(AppRoutes.productDetails(product.id), extra: product),
+      );
+    }
+  }
+
   /// Picking a category replaces any search (the API can't combine them).
   void _selectCategory(String? slug) {
     _searchController.clear();
@@ -104,49 +129,81 @@ class _ProductsPageState extends State<ProductsPage> {
       child: Scaffold(
         body: SafeArea(
           bottom: false,
-          child: RefreshIndicator(
-            onRefresh: _onRefresh,
-            edgeOffset: 120,
-            child: BlocBuilder<ProductListBloc, ProductListState>(
-              buildWhen: (previous, current) =>
-                  previous.status != current.status ||
-                  previous.query != current.query ||
-                  previous.products != current.products ||
-                  previous.isLoadingMore != current.isLoadingMore ||
-                  previous.loadMoreError != current.loadMoreError ||
-                  previous.hasReachedEnd != current.hasReachedEnd,
-              builder: (context, state) => CustomScrollView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                slivers: [
-                  HomeSliverAppBar(
-                    searchController: _searchController,
-                    onSearchChanged: (text) =>
-                        _bloc.add(ProductSearchChanged(text)),
-                    sort: state.query.sort,
-                    onSortPressed: () => unawaited(_openSort()),
-                  ),
-                  if (!state.query.isFiltered)
+          child: _masterDetail(
+            RefreshIndicator(
+              onRefresh: _onRefresh,
+              edgeOffset: 120,
+              child: BlocBuilder<ProductListBloc, ProductListState>(
+                buildWhen: (previous, current) =>
+                    previous.status != current.status ||
+                    previous.query != current.query ||
+                    previous.products != current.products ||
+                    previous.isLoadingMore != current.isLoadingMore ||
+                    previous.loadMoreError != current.loadMoreError ||
+                    previous.hasReachedEnd != current.hasReachedEnd,
+                builder: (context, state) => CustomScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    HomeSliverAppBar(
+                      searchController: _searchController,
+                      onSearchChanged: (text) =>
+                          _bloc.add(ProductSearchChanged(text)),
+                      sort: state.query.sort,
+                      onSortPressed: () => unawaited(_openSort()),
+                    ),
+                    if (!state.query.isFiltered)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.xs),
+                          child: PromoCarousel(onShop: _selectCategory),
+                        ),
+                      ),
                     SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: AppSpacing.xs),
-                        child: PromoCarousel(onShop: _selectCategory),
+                      child: CategoryChips(
+                        selectedSlug: state.query.categorySlug,
+                        onSelected: _selectCategory,
                       ),
                     ),
-                  SliverToBoxAdapter(
-                    child: CategoryChips(
-                      selectedSlug: state.query.categorySlug,
-                      onSelected: _selectCategory,
-                    ),
-                  ),
-                  SliverToBoxAdapter(child: _SectionTitle(state: state)),
-                  ..._content(state),
-                ],
+                    SliverToBoxAdapter(child: _SectionTitle(state: state)),
+                    ..._content(state),
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  /// On expanded widths the list shares the screen with a detail pane.
+  Widget _masterDetail(Widget list) {
+    if (!context.windowSize.isExpanded) return list;
+    final selected = _selected;
+    return Row(
+      children: [
+        Expanded(flex: 5, child: list),
+        const VerticalDivider(width: 1, thickness: 1),
+        Expanded(
+          flex: 4,
+          child: selected == null
+              ? const EmptyView(
+                  icon: Icons.touch_app_outlined,
+                  title: 'Select a product',
+                  message:
+                      'Pick any product to see its photos, details and '
+                      'reviews here.',
+                )
+              : KeyedSubtree(
+                  key: ValueKey(selected.id),
+                  child: widget.detailsBuilder(
+                    selected,
+                    () => setState(() => _selected = null),
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
@@ -172,7 +229,13 @@ class _ProductsPageState extends State<ProductsPage> {
         ),
       ),
     ],
-    ProductListStatus.success => [ProductGridSliver(state: state)],
+    ProductListStatus.success => [
+      ProductGridSliver(
+        state: state,
+        onProductTap: _openProduct,
+        selectedProductId: context.windowSize.isExpanded ? _selected?.id : null,
+      ),
+    ],
   };
 }
 
