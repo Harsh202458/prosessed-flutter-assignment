@@ -5,7 +5,8 @@ import 'package:shopsphere/core/widgets/quantity_selector.dart';
 import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
 
 /// Bottom bar with the quantity stepper and the add-to-cart button. The
-/// button is disabled when the product is out of stock.
+/// button is disabled when the product is out of stock, or when the cart
+/// already holds every unit in stock.
 class AddToCartBar extends StatelessWidget {
   const AddToCartBar({
     required this.state,
@@ -22,12 +23,27 @@ class AddToCartBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final product = state.product!;
-    final inStock = product.isInStock;
     final total = product.discountedPrice * state.quantity;
 
+    final (String label, IconData icon) = switch (state) {
+      _ when !product.isInStock => (
+        'Out of stock',
+        Icons.remove_shopping_cart_outlined,
+      ),
+      _ when !state.canAdd => (
+        'All in your cart',
+        Icons.shopping_cart_checkout_rounded,
+      ),
+      _ => (
+        'Add · ${Formatters.price(total)}',
+        Icons.add_shopping_cart_rounded,
+      ),
+    };
+
     return Material(
-      color: Theme.of(context).colorScheme.surfaceContainer,
+      color: theme.colorScheme.surfaceContainer,
       child: SafeArea(
         top: false,
         child: Padding(
@@ -37,33 +53,43 @@ class AddToCartBar extends StatelessWidget {
             AppSpacing.lg,
             AppSpacing.md,
           ),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (inStock) ...[
-                QuantitySelector(
-                  quantity: state.quantity,
-                  onDecrement: state.canDecrement ? onDecrement : null,
-                  onIncrement: state.canIncrement ? onIncrement : null,
-                ),
-                const SizedBox(width: AppSpacing.md),
-              ],
-              Expanded(
-                child: FilledButton.icon(
-                  onPressed: inStock ? onAddToCart : null,
-                  icon: Icon(
-                    inStock
-                        ? Icons.add_shopping_cart_rounded
-                        : Icons.remove_shopping_cart_outlined,
+              if (state.inCart > 0) ...[
+                Text(
+                  state.canAdd
+                      ? '${state.inCart} in your cart · '
+                            '${state.available} more available'
+                      : 'You have all ${product.stock} in your cart',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  label: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      inStock
-                          ? 'Add · ${Formatters.price(total)}'
-                          : 'Out of stock',
+                ),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+              Row(
+                children: [
+                  if (state.canAdd) ...[
+                    QuantitySelector(
+                      quantity: state.quantity,
+                      onDecrement: state.canDecrement ? onDecrement : null,
+                      onIncrement: state.canIncrement ? onIncrement : null,
+                    ),
+                    const SizedBox(width: AppSpacing.md),
+                  ],
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: state.canAdd ? onAddToCart : null,
+                      icon: Icon(icon),
+                      label: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(label),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),

@@ -7,6 +7,7 @@ import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
+import 'package:shopsphere/core/widgets/app_snack_bar.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
 import 'package:shopsphere/core/widgets/shimmer_box.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
@@ -34,59 +35,63 @@ class ProductDetailsPage extends StatelessWidget {
     final quantity = state.quantity;
     unawaited(context.read<CartCubit>().add(product, quantity));
     context.read<ProductDetailsCubit>().resetQuantity();
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text('Added $quantity × ${product.title} to your cart'),
-          action: SnackBarAction(
-            label: 'View cart',
-            onPressed: () => context.go(AppRoutes.cart),
-          ),
-        ),
-      );
+    showAppSnackBar(
+      context,
+      'Added $quantity × ${product.title} to your cart',
+      actionLabel: 'View cart',
+      onAction: () => context.go(AppRoutes.cart),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
-      builder: (context, state) {
-        final cubit = context.read<ProductDetailsCubit>();
-        return Scaffold(
-          appBar: AppBar(),
-          body: switch (state.status) {
-            ProductDetailsStatus.loading => _DetailsLayout(
-              product: preview,
-              isLoading: true,
-            ),
-            ProductDetailsStatus.success => _DetailsLayout(
-              product: state.product,
-            ),
-            ProductDetailsStatus.notFound => ErrorView(
-              icon: Icons.search_off_rounded,
-              title: 'Product not found',
-              message: "This product doesn't exist or is no longer available.",
-              actionLabel: 'Back to shop',
-              onRetry: () => context.canPop()
-                  ? context.pop()
-                  : context.go(AppRoutes.products),
-            ),
-            ProductDetailsStatus.failure => ErrorView(
-              title: "Couldn't load this product",
-              message: state.errorMessage ?? '',
-              onRetry: () => cubit.load(productId),
-            ),
-          },
-          bottomNavigationBar: state.status == ProductDetailsStatus.success
-              ? AddToCartBar(
-                  state: state,
-                  onDecrement: cubit.decrement,
-                  onIncrement: cubit.increment,
-                  onAddToCart: () => _addToCart(context, state),
-                )
-              : null,
-        );
-      },
+    return BlocListener<CartCubit, CartState>(
+      listenWhen: (previous, current) =>
+          productId != null &&
+          previous.quantityOf(productId!) != current.quantityOf(productId!),
+      listener: (context, cart) => context
+          .read<ProductDetailsCubit>()
+          .syncCartQuantity(cart.quantityOf(productId!)),
+      child: BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
+        builder: (context, state) {
+          final cubit = context.read<ProductDetailsCubit>();
+          return Scaffold(
+            appBar: AppBar(),
+            body: switch (state.status) {
+              ProductDetailsStatus.loading => _DetailsLayout(
+                product: preview,
+                isLoading: true,
+              ),
+              ProductDetailsStatus.success => _DetailsLayout(
+                product: state.product,
+              ),
+              ProductDetailsStatus.notFound => ErrorView(
+                icon: Icons.search_off_rounded,
+                title: 'Product not found',
+                message:
+                    "This product doesn't exist or is no longer available.",
+                actionLabel: 'Back to shop',
+                onRetry: () => context.canPop()
+                    ? context.pop()
+                    : context.go(AppRoutes.products),
+              ),
+              ProductDetailsStatus.failure => ErrorView(
+                title: "Couldn't load this product",
+                message: state.errorMessage ?? '',
+                onRetry: () => cubit.load(productId),
+              ),
+            },
+            bottomNavigationBar: state.status == ProductDetailsStatus.success
+                ? AddToCartBar(
+                    state: state,
+                    onDecrement: cubit.decrement,
+                    onIncrement: cubit.increment,
+                    onAddToCart: () => _addToCart(context, state),
+                  )
+                : null,
+          );
+        },
+      ),
     );
   }
 }
