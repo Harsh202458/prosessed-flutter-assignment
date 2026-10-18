@@ -279,6 +279,6 @@ any part of the code.
 ## 12. Author
 
 - **GitHub:** [Harsh202458](https://github.com/Harsh202458)
-- **Name / email / LinkedIn:** _to be filled in_
+- **Name:** Harsh
 
 Fonts: Plus Jakarta Sans © The Plus Jakarta Sans Project Authors, SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).
