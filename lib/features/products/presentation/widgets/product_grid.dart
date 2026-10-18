@@ -91,6 +91,14 @@ class _Footer extends StatelessWidget {
           ),
         ],
       );
+    } else if (state.isShowingCached) {
+      child = Text(
+        "These are saved products. Pull to refresh when you're back online.",
+        textAlign: TextAlign.center,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      );
     } else if (state.hasReachedEnd) {
       child = Text(
         "You've seen all ${state.products.length} products",

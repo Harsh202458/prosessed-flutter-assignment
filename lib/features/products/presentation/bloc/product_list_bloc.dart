@@ -65,6 +65,7 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
               : ProductListStatus.success,
           products: page.products,
           hasReachedEnd: !page.hasMore,
+          isShowingCached: page.isFromCache,
         ),
       ),
     );
@@ -96,6 +97,7 @@ class ProductListBloc extends Bloc<ProductListEvent, ProductListState> {
           hasReachedEnd: !page.hasMore,
           isLoadingMore: false,
           isRefreshing: false,
+          isShowingCached: page.isFromCache,
         ),
       ),
     );

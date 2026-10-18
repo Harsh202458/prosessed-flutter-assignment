@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/network/connectivity_cubit.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
@@ -12,6 +13,7 @@ import 'package:shopsphere/core/widgets/error_view.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
+import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:shopsphere/features/products/presentation/widgets/category_chips.dart';
 import 'package:shopsphere/features/products/presentation/widgets/category_style.dart';
 import 'package:shopsphere/features/products/presentation/widgets/home_app_bar.dart';
@@ -111,6 +113,22 @@ class _ProductsPageState extends State<ProductsPage> {
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        // Back online: replace saved or failed content with fresh results.
+        BlocListener<ConnectivityCubit, bool>(
+          listenWhen: (wasOnline, isOnline) => !wasOnline && isOnline,
+          listener: (context, _) {
+            final state = _bloc.state;
+            if (state.isShowingCached) {
+              _bloc.add(const ProductListRefreshed());
+            } else if (state.status == ProductListStatus.failure) {
+              _bloc.add(const ProductListStarted());
+            }
+            final categories = context.read<CategoriesCubit>();
+            if (categories.state.status == CategoriesStatus.failure) {
+              unawaited(categories.load());
+            }
+          },
+        ),
         BlocListener<ProductListBloc, ProductListState>(
           listenWhen: (previous, current) =>
               current.refreshError != null &&

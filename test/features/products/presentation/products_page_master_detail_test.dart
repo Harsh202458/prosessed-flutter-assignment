@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shopsphere/core/network/connectivity_cubit.dart';
 import 'package:shopsphere/core/theme/app_theme.dart';
 import 'package:shopsphere/features/products/domain/entities/category.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
@@ -20,10 +21,14 @@ class _MockCategoriesCubit extends MockCubit<CategoriesState>
 class _MockProfileCubit extends MockCubit<ProfileState>
     implements ProfileCubit {}
 
+class _MockConnectivityCubit extends MockCubit<bool>
+    implements ConnectivityCubit {}
+
 void main() {
   late _MockListBloc listBloc;
   late _MockCategoriesCubit categoriesCubit;
   late _MockProfileCubit profileCubit;
+  late _MockConnectivityCubit connectivityCubit;
 
   const products = [
     Product(
@@ -52,6 +57,8 @@ void main() {
     listBloc = _MockListBloc();
     categoriesCubit = _MockCategoriesCubit();
     profileCubit = _MockProfileCubit();
+    connectivityCubit = _MockConnectivityCubit();
+    when(() => connectivityCubit.state).thenReturn(true);
     when(() => listBloc.state).thenReturn(
       const ProductListState(
         status: ProductListStatus.success,
@@ -89,6 +96,7 @@ void main() {
               BlocProvider<ProductListBloc>.value(value: listBloc),
               BlocProvider<CategoriesCubit>.value(value: categoriesCubit),
               BlocProvider<ProfileCubit>.value(value: profileCubit),
+              BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),
             ],
             child: ProductsPage(
               detailsBuilder: (product, onClose) => Scaffold(

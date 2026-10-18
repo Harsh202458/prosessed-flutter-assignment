@@ -10,6 +10,7 @@ final class ProductListState extends Equatable {
     this.hasReachedEnd = false,
     this.isLoadingMore = false,
     this.isRefreshing = false,
+    this.isShowingCached = false,
     this.errorMessage,
     this.loadMoreError,
     this.refreshError,
@@ -21,6 +22,9 @@ final class ProductListState extends Equatable {
   final bool hasReachedEnd;
   final bool isLoadingMore;
   final bool isRefreshing;
+
+  /// The list is the saved copy shown while offline.
+  final bool isShowingCached;
 
   /// Full-screen error when the first page fails.
   final String? errorMessage;
@@ -38,6 +42,7 @@ final class ProductListState extends Equatable {
     bool? hasReachedEnd,
     bool? isLoadingMore,
     bool? isRefreshing,
+    bool? isShowingCached,
     String? errorMessage,
     String? loadMoreError,
     String? refreshError,
@@ -48,6 +53,7 @@ final class ProductListState extends Equatable {
     hasReachedEnd: hasReachedEnd ?? this.hasReachedEnd,
     isLoadingMore: isLoadingMore ?? this.isLoadingMore,
     isRefreshing: isRefreshing ?? this.isRefreshing,
+    isShowingCached: isShowingCached ?? this.isShowingCached,
     // Errors are one-shot: every new state clears them unless set again.
     errorMessage: errorMessage,
     loadMoreError: loadMoreError,
@@ -62,6 +68,7 @@ final class ProductListState extends Equatable {
     hasReachedEnd,
     isLoadingMore,
     isRefreshing,
+    isShowingCached,
     errorMessage,
     loadMoreError,
     refreshError,
