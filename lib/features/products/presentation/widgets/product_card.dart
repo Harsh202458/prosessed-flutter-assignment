@@ -9,10 +9,18 @@ import 'package:shopsphere/features/products/presentation/widgets/product_image_
 import 'package:shopsphere/features/products/presentation/widgets/rating_view.dart';
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({required this.product, this.onTap, super.key});
+  const ProductCard({
+    required this.product,
+    this.onTap,
+    this.selected = false,
+    super.key,
+  });
 
   final Product product;
   final VoidCallback? onTap;
+
+  /// Highlighted as the product open in the master-detail pane.
+  final bool selected;
 
   static const double _padding = AppSpacing.md;
   static const double _gap = AppSpacing.xs;
@@ -55,6 +63,12 @@ class ProductCard extends StatelessWidget {
     final scheme = theme.colorScheme;
 
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        side: selected
+            ? BorderSide(color: scheme.primary, width: 2)
+            : BorderSide.none,
+      ),
       child: InkWell(
         onTap: onTap,
         child: Column(
