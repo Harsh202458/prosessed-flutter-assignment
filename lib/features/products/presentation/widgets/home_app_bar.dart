@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/greeting.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_search_field.dart';
+import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 
 /// Greeting header with a pinned search bar and sort button underneath.
 class HomeSliverAppBar extends StatelessWidget {
@@ -22,6 +24,9 @@ class HomeSliverAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final firstName = context.select<ProfileCubit, String?>(
+      (cubit) => cubit.state.user?.firstName,
+    );
     final scaler = MediaQuery.textScalerOf(context);
     double line(TextStyle? s) =>
         scaler.scale(s?.fontSize ?? 14) * (s?.height ?? 1.3);
@@ -41,7 +46,11 @@ class HomeSliverAppBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            greetingFor(DateTime.now()),
+            firstName == null
+                ? greetingFor(DateTime.now())
+                : '${greetingFor(DateTime.now())}, $firstName',
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
