@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
+import 'package:shopsphere/core/widgets/app_snack_bar.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
@@ -89,9 +90,8 @@ class _ProductsPageState extends State<ProductsPage> {
           listenWhen: (previous, current) =>
               current.refreshError != null &&
               previous.refreshError != current.refreshError,
-          listener: (context, state) => ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(content: Text(state.refreshError!))),
+          listener: (context, state) =>
+              showAppSnackBar(context, state.refreshError!),
         ),
         BlocListener<ProductListBloc, ProductListState>(
           listenWhen: (previous, current) =>
