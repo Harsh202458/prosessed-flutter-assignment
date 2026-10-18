@@ -22,13 +22,25 @@ import 'package:shopsphere/features/products/presentation/widgets/review_tile.da
 import 'package:shopsphere/features/products/presentation/widgets/stock_badge.dart';
 
 class ProductDetailsPage extends StatelessWidget {
-  const ProductDetailsPage({required this.productId, this.preview, super.key});
+  const ProductDetailsPage({
+    required this.productId,
+    this.preview,
+    this.onClose,
+    super.key,
+  });
 
   final int? productId;
 
   /// The list item that was tapped, shown instantly while the full product
   /// loads so the Hero animation has something to land on.
   final Product? preview;
+
+  /// Set when shown as the detail pane of a master-detail layout: replaces
+  /// the back button with a close button and turns off the Hero animation
+  /// (the card and the pane are on screen together).
+  final VoidCallback? onClose;
+
+  bool get _embedded => onClose != null;
 
   void _addToCart(BuildContext context, ProductDetailsState state) {
     final product = state.product!;
@@ -56,24 +68,41 @@ class ProductDetailsPage extends StatelessWidget {
         builder: (context, state) {
           final cubit = context.read<ProductDetailsCubit>();
           return Scaffold(
-            appBar: AppBar(),
+            appBar: _embedded
+                ? AppBar(
+                    automaticallyImplyLeading: false,
+                    title: const Text('Product details'),
+                    actions: [
+                      IconButton(
+                        tooltip: 'Close details',
+                        onPressed: onClose,
+                        icon: const Icon(Icons.close_rounded),
+                      ),
+                      const SizedBox(width: AppSpacing.xs),
+                    ],
+                  )
+                : AppBar(),
             body: switch (state.status) {
               ProductDetailsStatus.loading => _DetailsLayout(
                 product: preview,
                 isLoading: true,
+                heroEnabled: !_embedded,
               ),
               ProductDetailsStatus.success => _DetailsLayout(
                 product: state.product,
+                heroEnabled: !_embedded,
               ),
               ProductDetailsStatus.notFound => ErrorView(
                 icon: Icons.search_off_rounded,
                 title: 'Product not found',
                 message:
                     "This product doesn't exist or is no longer available.",
-                actionLabel: 'Back to shop',
-                onRetry: () => context.canPop()
-                    ? context.pop()
-                    : context.go(AppRoutes.products),
+                actionLabel: _embedded ? 'Close' : 'Back to shop',
+                onRetry:
+                    onClose ??
+                    () => context.canPop()
+                        ? context.pop()
+                        : context.go(AppRoutes.products),
               ),
               ProductDetailsStatus.failure => ErrorView(
                 title: "Couldn't load this product",
@@ -98,10 +127,15 @@ class ProductDetailsPage extends StatelessWidget {
 
 /// Image and info stacked on phones, side by side on wide screens.
 class _DetailsLayout extends StatelessWidget {
-  const _DetailsLayout({required this.product, this.isLoading = false});
+  const _DetailsLayout({
+    required this.product,
+    required this.heroEnabled,
+    this.isLoading = false,
+  });
 
   final Product? product;
   final bool isLoading;
+  final bool heroEnabled;
 
   @override
   Widget build(BuildContext context) {
@@ -111,21 +145,22 @@ class _DetailsLayout extends StatelessWidget {
     final images = product.images.isNotEmpty
         ? product.images
         : [product.thumbnail];
+    final placeholder = ColoredBox(
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: ProductImage(url: product.thumbnail),
+      ),
+    );
     final gallery = isLoading
-        ? Hero(
-            tag: productHeroTag(product.id),
-            child: ColoredBox(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: ProductImage(url: product.thumbnail),
-              ),
-            ),
-          )
+        ? (heroEnabled
+              ? Hero(tag: productHeroTag(product.id), child: placeholder)
+              : placeholder)
         : ProductImageCarousel(
             productId: product.id,
             images: images,
             title: product.title,
+            heroEnabled: heroEnabled,
           );
     final info = _ProductInfo(product: product, isLoading: isLoading);
 

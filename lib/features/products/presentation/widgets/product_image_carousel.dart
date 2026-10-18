@@ -13,12 +13,14 @@ class ProductImageCarousel extends StatefulWidget {
     required this.productId,
     required this.images,
     required this.title,
+    this.heroEnabled = true,
     super.key,
   });
 
   final int productId;
   final List<String> images;
   final String title;
+  final bool heroEnabled;
 
   @override
   State<ProductImageCarousel> createState() => _ProductImageCarouselState();
@@ -54,7 +56,7 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
                       '${widget.title}, image ${index + 1} of ${images.length}',
                 ),
               );
-              return index == 0
+              return index == 0 && widget.heroEnabled
                   ? Hero(tag: productHeroTag(widget.productId), child: image)
                   : image;
             },
