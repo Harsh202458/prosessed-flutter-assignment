@@ -21,16 +21,36 @@ class AdaptiveShell extends StatelessWidget {
   const AdaptiveShell({
     required this.navigationShell,
     required this.destinations,
+    this.badges = const {},
     super.key,
   });
 
   final StatefulNavigationShell navigationShell;
   final List<ShellDestination> destinations;
 
+  /// Count badges keyed by destination index, e.g. `{1: cartItemCount}`.
+  final Map<int, int> badges;
+
   void _onSelect(int index) => navigationShell.goBranch(
     index,
     initialLocation: index == navigationShell.currentIndex,
   );
+
+  Widget _icon(int index, {required bool selected}) {
+    final destination = destinations[index];
+    return _CountBadge(
+      count: badges[index] ?? 0,
+      child: Icon(selected ? destination.selectedIcon : destination.icon),
+    );
+  }
+
+  String _label(int index) {
+    final count = badges[index] ?? 0;
+    final label = destinations[index].label;
+    return count > 0
+        ? '$label, $count ${count == 1 ? 'item' : 'items'}'
+        : label;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,12 +63,12 @@ class AdaptiveShell extends StatelessWidget {
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _onSelect,
           destinations: [
-            for (final d in destinations)
+            for (var i = 0; i < destinations.length; i++)
               NavigationDestination(
-                icon: Icon(d.icon),
-                selectedIcon: Icon(d.selectedIcon),
-                label: d.label,
-                tooltip: d.label,
+                icon: _icon(i, selected: false),
+                selectedIcon: _icon(i, selected: true),
+                label: destinations[i].label,
+                tooltip: _label(i),
               ),
           ],
         ),
@@ -68,11 +88,11 @@ class AdaptiveShell extends StatelessWidget {
                   ? NavigationRailLabelType.none
                   : NavigationRailLabelType.all,
               destinations: [
-                for (final d in destinations)
+                for (var i = 0; i < destinations.length; i++)
                   NavigationRailDestination(
-                    icon: Icon(d.icon),
-                    selectedIcon: Icon(d.selectedIcon),
-                    label: Text(d.label),
+                    icon: _icon(i, selected: false),
+                    selectedIcon: _icon(i, selected: true),
+                    label: Text(destinations[i].label),
                   ),
               ],
             ),
@@ -81,6 +101,34 @@ class AdaptiveShell extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Badge that pops briefly whenever [count] changes.
+class _CountBadge extends StatelessWidget {
+  const _CountBadge({required this.count, required this.child});
+
+  final int count;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final badge = Badge(
+      isLabelVisible: count > 0,
+      label: Text(count > 99 ? '99+' : '$count'),
+      child: child,
+    );
+    if (MediaQuery.disableAnimationsOf(context)) return badge;
+
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(count),
+      tween: Tween(begin: count > 0 ? 1.3 : 1, end: 1),
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.elasticOut,
+      child: badge,
+      builder: (context, scale, child) =>
+          Transform.scale(scale: scale, child: child),
     );
   }
 }
