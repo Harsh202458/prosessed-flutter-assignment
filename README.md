@@ -1,5 +1,7 @@
 # ShopSphere
 
+[![CI](https://github.com/Harsh202458/prosessed-flutter-assignment/actions/workflows/ci.yml/badge.svg)](https://github.com/Harsh202458/prosessed-flutter-assignment/actions/workflows/ci.yml)
+
 ShopSphere is a Flutter shopping catalogue built on the public
 [DummyJSON](https://dummyjson.com) API. You sign in, browse and search a
 paginated catalogue, filter by category, sort, open a product to see its
