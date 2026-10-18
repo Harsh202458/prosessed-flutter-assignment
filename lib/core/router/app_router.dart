@@ -11,7 +11,10 @@ import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
 import 'package:shopsphere/features/auth/presentation/pages/splash_page.dart';
+import 'package:shopsphere/features/cart/domain/entities/order_confirmation.dart';
+import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/cart/presentation/pages/cart_page.dart';
+import 'package:shopsphere/features/cart/presentation/pages/order_confirmation_page.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
@@ -57,7 +60,14 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, shell) =>
-          AdaptiveShell(navigationShell: shell, destinations: _destinations),
+          BlocSelector<CartCubit, CartState, int>(
+            selector: (cart) => cart.totals.itemCount,
+            builder: (context, cartCount) => AdaptiveShell(
+              navigationShell: shell,
+              destinations: _destinations,
+              badges: {1: cartCount},
+            ),
+          ),
       branches: [
         StatefulShellBranch(
           routes: [
@@ -108,6 +118,16 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
             GoRoute(
               path: AppRoutes.cart,
               builder: (context, state) => const CartPage(),
+              routes: [
+                GoRoute(
+                  path: 'confirmation',
+                  redirect: (context, state) =>
+                      state.extra is OrderConfirmation ? null : AppRoutes.cart,
+                  builder: (context, state) => OrderConfirmationPage(
+                    order: state.extra! as OrderConfirmation,
+                  ),
+                ),
+              ],
             ),
           ],
         ),

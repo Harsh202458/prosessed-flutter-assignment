@@ -16,6 +16,12 @@ import 'package:shopsphere/features/auth/domain/usecases/login.dart';
 import 'package:shopsphere/features/auth/domain/usecases/logout.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
+import 'package:shopsphere/features/cart/data/datasources/cart_local_data_source.dart';
+import 'package:shopsphere/features/cart/data/datasources/cart_remote_data_source.dart';
+import 'package:shopsphere/features/cart/data/repositories/cart_repository_impl.dart';
+import 'package:shopsphere/features/cart/domain/repositories/cart_repository.dart';
+import 'package:shopsphere/features/cart/domain/usecases/place_order.dart';
+import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/products/data/datasources/product_remote_data_source.dart';
 import 'package:shopsphere/features/products/data/repositories/product_repository_impl.dart';
 import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
@@ -32,9 +38,11 @@ final GetIt sl = GetIt.instance;
 
 Future<void> configureDependencies() async {
   await Hive.initFlutter();
+  final cartBox = await Hive.openBox<String>(CartLocalDataSourceImpl.boxName);
   _registerCore();
   _registerAuth();
   _registerProducts();
+  _registerCart(cartBox);
   sl.registerLazySingleton<GoRouter>(() => createRouter(sl()));
 }
 
@@ -89,4 +97,23 @@ void _registerProducts() {
     ..registerFactory(() => ProductListBloc(sl()))
     ..registerFactory(() => CategoriesCubit(sl()))
     ..registerFactory(() => ProductDetailsCubit(sl()));
+}
+
+void _registerCart(Box<String> cartBox) {
+  sl
+    ..registerLazySingleton<CartLocalDataSource>(
+      () => CartLocalDataSourceImpl(cartBox),
+    )
+    ..registerLazySingleton<CartRemoteDataSource>(
+      () => CartRemoteDataSourceImpl(sl()),
+    )
+    ..registerLazySingleton<CartRepository>(
+      () => CartRepositoryImpl(local: sl(), remote: sl()),
+    )
+    ..registerLazySingleton(
+      () => PlaceOrder(cartRepository: sl(), authRepository: sl()),
+    )
+    ..registerLazySingleton(
+      () => CartCubit(repository: sl(), placeOrder: sl()),
+    );
 }
