@@ -43,7 +43,9 @@ void main() {
 
     test('round-trips the cart through JSON in the box', () async {
       String? stored;
-      when(() => box.put(any<dynamic>(), any<String>())).thenAnswer((invocation) async {
+      when(() => box.put(any<dynamic>(), any<String>())).thenAnswer((
+        invocation,
+      ) async {
         stored = invocation.positionalArguments[1] as String;
       });
       await dataSource.writeCart(const [_model]);
