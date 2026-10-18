@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
+import 'package:shopsphere/core/widgets/offline_banner.dart';
 
 /// A top-level destination in the main navigation.
 class ShellDestination {
@@ -58,7 +59,12 @@ class AdaptiveShell extends StatelessWidget {
 
     if (size.isCompact) {
       return Scaffold(
-        body: navigationShell,
+        body: Column(
+          children: [
+            Expanded(child: navigationShell),
+            const OfflineBanner(),
+          ],
+        ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
           onDestinationSelected: _onSelect,
@@ -97,7 +103,14 @@ class AdaptiveShell extends StatelessWidget {
               ],
             ),
             const VerticalDivider(width: 1, thickness: 1),
-            Expanded(child: navigationShell),
+            Expanded(
+              child: Column(
+                children: [
+                  Expanded(child: navigationShell),
+                  const OfflineBanner(),
+                ],
+              ),
+            ),
           ],
         ),
       ),
