@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopsphere/core/theme/app_theme.dart';
+import 'package:shopsphere/core/theme/theme_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
@@ -14,6 +15,7 @@ class ShopSphereApp extends StatelessWidget {
     required this.authBloc,
     required this.cartCubit,
     required this.profileCubit,
+    required this.themeCubit,
     super.key,
   });
 
@@ -21,6 +23,7 @@ class ShopSphereApp extends StatelessWidget {
   final AuthBloc authBloc;
   final CartCubit cartCubit;
   final ProfileCubit profileCubit;
+  final ThemeCubit themeCubit;
 
   void _onAuthChanged(BuildContext context, AuthState state) {
     switch (state.status) {
@@ -43,16 +46,20 @@ class ShopSphereApp extends StatelessWidget {
         BlocProvider.value(value: authBloc),
         BlocProvider.value(value: cartCubit),
         BlocProvider.value(value: profileCubit),
+        BlocProvider.value(value: themeCubit),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (previous, current) => previous.status != current.status,
         listener: _onAuthChanged,
-        child: MaterialApp.router(
-          title: 'ShopSphere',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.light,
-          darkTheme: AppTheme.dark,
-          routerConfig: router,
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) => MaterialApp.router(
+            title: 'ShopSphere',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: themeMode,
+            routerConfig: router,
+          ),
         ),
       ),
     );
