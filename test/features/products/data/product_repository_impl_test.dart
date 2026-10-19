@@ -171,6 +171,76 @@ void main() {
       expect(captured.single, '/products/category/smartphones');
     });
 
+    test('adds one product photo per category from a single request', () async {
+      when(
+        () => dio.get<List<dynamic>>(
+          '/products/categories',
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(),
+          data: const [
+            {'slug': 'beauty', 'name': 'Beauty'},
+            {'slug': 'tops', 'name': 'Tops'},
+          ],
+        ),
+      );
+      when(
+        () => dio.get<Map<String, dynamic>>(
+          '/products',
+          queryParameters: {'limit': 0, 'select': 'category,thumbnail'},
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(),
+          data: const {
+            'products': [
+              {'id': 1, 'category': 'beauty', 'thumbnail': 'a.webp'},
+              {'id': 2, 'category': 'beauty', 'thumbnail': 'b.webp'},
+            ],
+          },
+        ),
+      );
+
+      final categories = await dataSource.getCategories();
+
+      expect(categories.first.imageUrl, 'a.webp');
+      expect(categories.last.imageUrl, isNull);
+    });
+
+    test('still returns categories when the photo request fails', () async {
+      when(
+        () => dio.get<List<dynamic>>(
+          '/products/categories',
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenAnswer(
+        (_) async => Response(
+          requestOptions: RequestOptions(),
+          data: const [
+            {'slug': 'beauty', 'name': 'Beauty'},
+          ],
+        ),
+      );
+      when(
+        () => dio.get<Map<String, dynamic>>(
+          '/products',
+          queryParameters: {'limit': 0, 'select': 'category,thumbnail'},
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(),
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      final categories = await dataSource.getCategories();
+
+      expect(categories.single.slug, 'beauty');
+      expect(categories.single.imageUrl, isNull);
+    });
+
     test('throws a typed exception when Dio fails', () async {
       when(
         () => dio.get<Map<String, dynamic>>(
