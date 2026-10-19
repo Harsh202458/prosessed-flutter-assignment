@@ -111,18 +111,23 @@ class _PromoCarouselState extends State<PromoCarousel> {
     );
   }
 
+  /// Promo headline: between titleMedium and titleLarge so two lines fit
+  /// without the banner dominating the screen.
+  static TextStyle? titleStyle(TextTheme text) =>
+      text.titleMedium?.copyWith(fontSize: 18, height: 1.25);
+
   static double _height(BuildContext context) {
     final text = Theme.of(context).textTheme;
     final scaler = MediaQuery.textScalerOf(context);
     double line(TextStyle? s) =>
         scaler.scale(s?.fontSize ?? 14) * (s?.height ?? 1.3);
-    return AppSpacing.lg * 2 +
+    return AppSpacing.md * 2 +
         line(text.labelMedium) +
-        AppSpacing.xs +
-        line(text.titleLarge) * 2 +
-        AppSpacing.md +
+        AppSpacing.xxs +
+        line(titleStyle(text)) * 2 +
+        AppSpacing.sm +
         line(text.labelLarge) +
-        AppSpacing.sm * 2 +
+        AppSpacing.xs * 2 +
         // Headroom for sub-pixel rounding of the measured text.
         AppSpacing.xs;
   }
@@ -211,7 +216,10 @@ class _PromoBanner extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.md,
+            ),
             child: Row(
               children: [
                 Expanded(
@@ -227,16 +235,16 @@ class _PromoBanner extends StatelessWidget {
                           color: foreground,
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.xs),
+                      const SizedBox(height: AppSpacing.xxs),
                       Text(
                         promo.title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: foreground,
-                        ),
+                        style: _PromoCarouselState.titleStyle(
+                          theme.textTheme,
+                        )?.copyWith(color: foreground),
                       ),
-                      const SizedBox(height: AppSpacing.md),
+                      const SizedBox(height: AppSpacing.sm),
                       DecoratedBox(
                         decoration: BoxDecoration(
                           color: foreground,
@@ -245,7 +253,7 @@ class _PromoBanner extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.md,
-                            vertical: AppSpacing.sm,
+                            vertical: AppSpacing.xs,
                           ),
                           child: Text(
                             'Shop now',
@@ -260,9 +268,9 @@ class _PromoBanner extends StatelessWidget {
                 ),
                 const SizedBox(width: AppSpacing.md),
                 CircleAvatar(
-                  radius: 36,
+                  radius: 28,
                   backgroundColor: foreground.withValues(alpha: 0.12),
-                  child: Icon(promo.icon, size: 36, color: foreground),
+                  child: Icon(promo.icon, size: 28, color: foreground),
                 ),
               ],
             ),

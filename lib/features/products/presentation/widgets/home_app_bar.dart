@@ -33,8 +33,8 @@ class HomeSliverAppBar extends StatelessWidget {
 
     final toolbarHeight =
         line(theme.textTheme.bodyMedium) +
-        line(theme.textTheme.headlineSmall) +
-        AppSpacing.lg;
+        line(theme.textTheme.titleLarge) +
+        AppSpacing.md;
     final searchHeight = (AppSpacing.md * 2 + line(theme.textTheme.bodyLarge))
         .clamp(48.0, double.infinity);
 
@@ -59,7 +59,7 @@ class HomeSliverAppBar extends StatelessWidget {
             'Discover something new',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: theme.textTheme.headlineSmall,
+            style: theme.textTheme.titleLarge,
           ),
         ],
       ),
