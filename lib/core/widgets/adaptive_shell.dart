@@ -32,10 +32,15 @@ class AdaptiveShell extends StatelessWidget {
   /// Count badges keyed by destination index, e.g. `{1: cartItemCount}`.
   final Map<int, int> badges;
 
-  void _onSelect(int index) => navigationShell.goBranch(
-    index,
-    initialLocation: index == navigationShell.currentIndex,
-  );
+  /// Switching tabs also dismisses any snackbar, so a message about one
+  /// screen never covers buttons on the next.
+  void _onSelect(BuildContext context, int index) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
+  }
 
   Widget _icon(int index, {required bool selected}) {
     final destination = destinations[index];
@@ -67,7 +72,7 @@ class AdaptiveShell extends StatelessWidget {
         ),
         bottomNavigationBar: NavigationBar(
           selectedIndex: navigationShell.currentIndex,
-          onDestinationSelected: _onSelect,
+          onDestinationSelected: (index) => _onSelect(context, index),
           destinations: [
             for (var i = 0; i < destinations.length; i++)
               NavigationDestination(
@@ -88,7 +93,7 @@ class AdaptiveShell extends StatelessWidget {
           children: [
             NavigationRail(
               selectedIndex: navigationShell.currentIndex,
-              onDestinationSelected: _onSelect,
+              onDestinationSelected: (index) => _onSelect(context, index),
               extended: size.isExpanded,
               labelType: size.isExpanded
                   ? NavigationRailLabelType.none
