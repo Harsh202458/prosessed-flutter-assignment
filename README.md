@@ -67,7 +67,7 @@ phones to tablets in landscape.
 - [x] **Offline mode**: last product list and categories cached; "You're offline" banner; refreshes itself when the connection returns
 - [x] **Widget tests**, including overflow checks at 1.3× text scale and a tablet master–detail test
 - [x] **CI** with GitHub Actions: format check, `flutter analyze`, `flutter test --coverage`
-- [ ] Wishlist — not built (see *Assumptions & trade-offs*)
+- [x] **Wishlist** stored locally: heart on every card and on details, a Wishlist screen from Profile, undo on remove, cleared on sign-out
 - [ ] Localization (English + Hindi) — not built
 
 ### Extra polish
@@ -148,6 +148,7 @@ lib/
     products/  data · domain · presentation
     cart/      data · domain · presentation
     profile/   presentation   (reuses the auth domain's GetCurrentUser)
+    wishlist/  data · domain · presentation
 test/
   fixtures/                # real DummyJSON responses
   core/ features/          # mirrors lib/
@@ -175,7 +176,7 @@ boilerplate than Riverpod or Provider; for a reviewed codebase with many async
 edge cases, that explicitness is worth it.
 
 App-wide: `AuthBloc` (session), `CartCubit`, `ProfileCubit`, `ThemeCubit`,
-`ConnectivityCubit`. Screen-scoped: `ProductListBloc`, `CategoriesCubit`,
+`ConnectivityCubit`, `WishlistCubit`. Screen-scoped: `ProductListBloc`, `CategoriesCubit`,
 `ProductDetailsCubit`, `LoginCubit`. States are modelled explicitly
 (`initial / loading / success / empty / failure`, plus `isLoadingMore`,
 `isRefreshing` and one-shot error fields).
@@ -240,8 +241,8 @@ flutter build apk --release
 flutter test --coverage
 ```
 
-- **119 tests**, all passing: repositories (success, server-failure and network-failure paths), use cases, every Bloc/Cubit state sequence (`bloc_test`), JSON parsing with real fixtures, and widget tests (validation, not-found, out-of-stock, cart totals, profile, overflow at 1.3× text, tablet master–detail).
-- **Line coverage: 75.4%** of hand-written code (generated `*.g.dart` / `*.freezed.dart` excluded; `coverage/lcov.info`).
+- **132 tests**, all passing: repositories (success, server-failure and network-failure paths), use cases, every Bloc/Cubit state sequence (`bloc_test`), JSON parsing with real fixtures, and widget tests (validation, not-found, out-of-stock, cart totals, profile, overflow at 1.3× text, tablet master–detail).
+- **Line coverage: 75.9%** of hand-written code (generated `*.g.dart` / `*.freezed.dart` excluded; `coverage/lcov.info`).
 - CI runs format check, analyze and tests on every push (`.github/workflows/ci.yml`).
 
 ---
@@ -264,7 +265,7 @@ Any user from `GET https://dummyjson.com/users` can also sign in.
 - **Signing out clears the cart** as part of "clears the local session".
 - **Only the unfiltered first page is cached** for offline use, keeping the cache small and predictable.
 - **Release signing:** the APK is signed with the debug key so it installs anywhere; a real release would use an upload keystore kept out of the repo.
-- **Not done:** wishlist and Hindi localization (bonus). With more time I would add them, golden tests, an integration test that drives login → order, and a real launcher icon/splash via `flutter_native_splash`.
+- **Not done:** Hindi localization (bonus). With more time I would add it, golden tests, an integration test that drives login → order, and a real launcher icon/splash via `flutter_native_splash`.
 
 ---
 
