@@ -41,6 +41,9 @@ class _ProductsPageState extends State<ProductsPage> {
   /// Start loading the next page this far (in dp) before the end.
   static const double _prefetchExtent = 600;
 
+  /// Below this screen height the promo banner is left out.
+  static const double _minBannerHeight = 560;
+
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
 
@@ -170,7 +173,10 @@ class _ProductsPageState extends State<ProductsPage> {
                       sort: state.query.sort,
                       onSortPressed: () => unawaited(_openSort()),
                     ),
-                    if (!state.query.isFiltered)
+                    // Hidden while filtering, and on short screens (phones
+                    // in landscape) where it would push products off-screen.
+                    if (!state.query.isFiltered &&
+                        MediaQuery.sizeOf(context).height >= _minBannerHeight)
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.only(top: AppSpacing.xs),
