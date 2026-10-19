@@ -22,6 +22,7 @@ import 'package:shopsphere/features/products/presentation/cubit/product_details_
 import 'package:shopsphere/features/products/presentation/pages/product_details_page.dart';
 import 'package:shopsphere/features/products/presentation/pages/products_page.dart';
 import 'package:shopsphere/features/profile/presentation/pages/profile_page.dart';
+import 'package:shopsphere/features/wishlist/presentation/pages/wishlist_page.dart';
 
 const _destinations = [
   ShellDestination(
@@ -133,6 +134,26 @@ GoRouter createRouter(AuthBloc authBloc) => GoRouter(
             GoRoute(
               path: AppRoutes.profile,
               builder: (context, state) => const ProfilePage(),
+              routes: [
+                GoRoute(
+                  path: 'wishlist',
+                  builder: (context, state) => const WishlistPage(),
+                  routes: [
+                    // Details opened from the wishlist stay in the Profile
+                    // tab instead of jumping to the Shop tab.
+                    GoRoute(
+                      path: ':id',
+                      builder: (context, state) => _productDetails(
+                        context,
+                        id: int.tryParse(state.pathParameters['id'] ?? ''),
+                        preview: state.extra is Product
+                            ? state.extra! as Product
+                            : null,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ],
         ),
