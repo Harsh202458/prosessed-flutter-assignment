@@ -254,7 +254,12 @@ class _InfoTile extends StatelessWidget {
           color: theme.colorScheme.onSurfaceVariant,
         ),
       ),
-      subtitle: Text(value, style: theme.textTheme.bodyLarge),
+      subtitle: Text(
+        value,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: theme.textTheme.bodyLarge,
+      ),
     );
   }
 }
