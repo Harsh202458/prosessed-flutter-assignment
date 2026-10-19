@@ -1,8 +1,11 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
+import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 enum _PromoTone { primary, tertiary, secondary }
@@ -267,15 +270,53 @@ class _PromoBanner extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppSpacing.md),
-                CircleAvatar(
-                  radius: 28,
-                  backgroundColor: foreground.withValues(alpha: 0.12),
-                  child: Icon(promo.icon, size: 28, color: foreground),
-                ),
+                _PromoImage(promo: promo, accent: foreground),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A real product photo from the promo's category (the same photo its
+/// category chip uses), with the icon as a fallback while it loads.
+class _PromoImage extends StatelessWidget {
+  const _PromoImage({required this.promo, required this.accent});
+
+  final _Promo promo;
+  final Color accent;
+
+  static const double _size = 92;
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = context.select<CategoriesCubit, String?>(
+      (cubit) => cubit.state.categories
+          .where((c) => c.slug == promo.categorySlug)
+          .firstOrNull
+          ?.imageUrl,
+    );
+    final fallback = Icon(promo.icon, size: 36, color: accent);
+
+    return ExcludeSemantics(
+      child: Container(
+        width: _size,
+        height: _size,
+        padding: const EdgeInsets.all(AppSpacing.sm),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
+          shape: BoxShape.circle,
+        ),
+        child: imageUrl == null
+            ? fallback
+            : CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+                placeholder: (_, _) => fallback,
+                errorWidget: (_, _, _) => fallback,
+              ),
       ),
     );
   }
