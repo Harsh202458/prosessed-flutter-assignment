@@ -11,9 +11,13 @@ import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:shopsphere/features/products/presentation/pages/products_page.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 class _MockListBloc extends MockBloc<ProductListEvent, ProductListState>
     implements ProductListBloc {}
+
+class _MockWishlistCubit extends MockCubit<WishlistState>
+    implements WishlistCubit {}
 
 class _MockCategoriesCubit extends MockCubit<CategoriesState>
     implements CategoriesCubit {}
@@ -25,6 +29,7 @@ class _MockConnectivityCubit extends MockCubit<bool>
     implements ConnectivityCubit {}
 
 void main() {
+  late _MockWishlistCubit wishlistCubit;
   late _MockListBloc listBloc;
   late _MockCategoriesCubit categoriesCubit;
   late _MockProfileCubit profileCubit;
@@ -54,6 +59,8 @@ void main() {
   ];
 
   setUp(() {
+    wishlistCubit = _MockWishlistCubit();
+    when(() => wishlistCubit.state).thenReturn(const WishlistState());
     listBloc = _MockListBloc();
     categoriesCubit = _MockCategoriesCubit();
     profileCubit = _MockProfileCubit();
@@ -94,6 +101,7 @@ void main() {
           home: MultiBlocProvider(
             providers: [
               BlocProvider<ProductListBloc>.value(value: listBloc),
+              BlocProvider<WishlistCubit>.value(value: wishlistCubit),
               BlocProvider<CategoriesCubit>.value(value: categoriesCubit),
               BlocProvider<ProfileCubit>.value(value: profileCubit),
               BlocProvider<ConnectivityCubit>.value(value: connectivityCubit),

@@ -8,17 +8,24 @@ import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
 import 'package:shopsphere/features/products/presentation/pages/product_details_page.dart';
+import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 class _MockDetailsCubit extends MockCubit<ProductDetailsState>
     implements ProductDetailsCubit {}
 
+class _MockWishlistCubit extends MockCubit<WishlistState>
+    implements WishlistCubit {}
+
 class _MockCartCubit extends MockCubit<CartState> implements CartCubit {}
 
 void main() {
+  late _MockWishlistCubit wishlistCubit;
   late _MockDetailsCubit cubit;
   late _MockCartCubit cartCubit;
 
   setUp(() {
+    wishlistCubit = _MockWishlistCubit();
+    when(() => wishlistCubit.state).thenReturn(const WishlistState());
     cubit = _MockDetailsCubit();
     cartCubit = _MockCartCubit();
     when(() => cartCubit.state).thenReturn(const CartState());
@@ -43,6 +50,7 @@ void main() {
         home: MultiBlocProvider(
           providers: [
             BlocProvider<ProductDetailsCubit>.value(value: cubit),
+            BlocProvider<WishlistCubit>.value(value: wishlistCubit),
             BlocProvider<CartCubit>.value(value: cartCubit),
           ],
           child: const ProductDetailsPage(productId: 1),

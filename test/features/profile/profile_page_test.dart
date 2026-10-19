@@ -9,9 +9,13 @@ import 'package:shopsphere/features/auth/domain/entities/user.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/pages/profile_page.dart';
+import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 class _MockProfileCubit extends MockCubit<ProfileState>
     implements ProfileCubit {}
+
+class _MockWishlistCubit extends MockCubit<WishlistState>
+    implements WishlistCubit {}
 
 class _MockAuthBloc extends MockBloc<AuthEvent, AuthState>
     implements AuthBloc {}
@@ -19,6 +23,7 @@ class _MockAuthBloc extends MockBloc<AuthEvent, AuthState>
 class _MockThemeCubit extends MockCubit<ThemeMode> implements ThemeCubit {}
 
 void main() {
+  late _MockWishlistCubit wishlistCubit;
   late _MockProfileCubit profileCubit;
   late _MockAuthBloc authBloc;
   late _MockThemeCubit themeCubit;
@@ -36,6 +41,8 @@ void main() {
   setUpAll(() => registerFallbackValue(const AuthLogoutRequested()));
 
   setUp(() {
+    wishlistCubit = _MockWishlistCubit();
+    when(() => wishlistCubit.state).thenReturn(const WishlistState());
     profileCubit = _MockProfileCubit();
     authBloc = _MockAuthBloc();
     themeCubit = _MockThemeCubit();
@@ -46,7 +53,7 @@ void main() {
   Future<void> pump(WidgetTester tester, ProfileState state) async {
     when(() => profileCubit.state).thenReturn(state);
     tester.view
-      ..physicalSize = const Size(400, 900)
+      ..physicalSize = const Size(400, 1200)
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
@@ -55,6 +62,7 @@ void main() {
         home: MultiBlocProvider(
           providers: [
             BlocProvider<ProfileCubit>.value(value: profileCubit),
+            BlocProvider<WishlistCubit>.value(value: wishlistCubit),
             BlocProvider<AuthBloc>.value(value: authBloc),
             BlocProvider<ThemeCubit>.value(value: themeCubit),
           ],
