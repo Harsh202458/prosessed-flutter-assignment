@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
 import 'package:shopsphere/core/widgets/message_banner.dart';
@@ -11,6 +13,7 @@ import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/widgets/appearance_selector.dart';
 import 'package:shopsphere/features/profile/presentation/widgets/user_avatar.dart';
+import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -117,6 +120,8 @@ class ProfilePage extends StatelessWidget {
                             ),
                           ],
                         ),
+                        const SizedBox(height: AppSpacing.lg),
+                        const _WishlistEntry(),
                         const SizedBox(height: AppSpacing.lg),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -283,6 +288,34 @@ class _ProfileSkeleton extends StatelessWidget {
             ShimmerBox(height: 140, radius: AppRadius.lg),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _WishlistEntry extends StatelessWidget {
+  const _WishlistEntry();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final count = context.select<WishlistCubit, int>(
+      (cubit) => cubit.state.products.length,
+    );
+    return Card(
+      child: ListTile(
+        leading: Icon(
+          Icons.favorite_border_rounded,
+          color: theme.colorScheme.primary,
+        ),
+        title: Text('Wishlist', style: theme.textTheme.titleSmall),
+        subtitle: Text(
+          count == 0
+              ? 'Save products you love'
+              : '$count saved ${count == 1 ? 'item' : 'items'}',
+        ),
+        trailing: const Icon(Icons.chevron_right_rounded),
+        onTap: () => unawaited(context.push(AppRoutes.wishlist)),
       ),
     );
   }
