@@ -56,6 +56,7 @@ class _LoginFormState extends State<LoginForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const _FieldLabel('Username'),
                 TextFormField(
                   controller: _username,
                   enabled: !state.isSubmitting,
@@ -63,12 +64,13 @@ class _LoginFormState extends State<LoginForm> {
                   autofillHints: const [AutofillHints.username],
                   autocorrect: false,
                   decoration: const InputDecoration(
-                    labelText: 'Username',
+                    hintText: 'Enter your username',
                     prefixIcon: Icon(Icons.person_outline_rounded),
                   ),
                   validator: Validators.username,
                 ),
                 const SizedBox(height: AppSpacing.lg),
+                const _FieldLabel('Password'),
                 TextFormField(
                   controller: _password,
                   enabled: !state.isSubmitting,
@@ -77,7 +79,7 @@ class _LoginFormState extends State<LoginForm> {
                   autofillHints: const [AutofillHints.password],
                   onFieldSubmitted: (_) => _submit(),
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    hintText: 'Enter your password',
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       onPressed: context
@@ -122,6 +124,31 @@ class _LoginFormState extends State<LoginForm> {
           ),
         );
       },
+    );
+  }
+}
+
+/// Static label above a field. A floating label sits on the top edge of a
+/// borderless filled field and looks misaligned, so the label lives outside.
+class _FieldLabel extends StatelessWidget {
+  const _FieldLabel(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: AppSpacing.xs,
+        bottom: AppSpacing.sm,
+      ),
+      child: Text(
+        text,
+        style: theme.textTheme.labelLarge?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 }
