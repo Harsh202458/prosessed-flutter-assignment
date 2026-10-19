@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
@@ -70,8 +71,9 @@ class _PromoCarouselState extends State<PromoCarousel> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Two banners side by side on tablets, one on phones.
-    final fraction = context.windowSize.isCompact ? 1.0 : 0.5;
+    // Two banners side by side only when the list has the full width: on
+    // phones, and in master-detail mode, it shows one at a time.
+    final fraction = context.windowSize == WindowSize.medium ? 0.5 : 1.0;
     if (_controller == null || fraction != _viewportFraction) {
       final page = _controller?.hasClients ?? false
           ? _controller!.page?.round() ?? 0
@@ -305,8 +307,8 @@ class _PromoImage extends StatelessWidget {
         width: _size,
         height: _size,
         padding: const EdgeInsets.all(AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        decoration: const BoxDecoration(
+          color: AppColors.productPhoto,
           shape: BoxShape.circle,
         ),
         child: imageUrl == null
