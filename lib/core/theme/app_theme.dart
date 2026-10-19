@@ -181,20 +181,60 @@ abstract final class AppTheme {
     );
   }
 
-  /// Plus Jakarta Sans with heavier display weights and slightly tighter
-  /// tracking on large text.
+  /// Plus Jakarta Sans with heavier display weights. Material's default
+  /// letter spacing is tuned for Roboto and makes this wider typeface look
+  /// stretched, so tracking is tightened across the scale.
   static TextTheme _textTheme(TextTheme base) {
-    TextStyle? tight(TextStyle? style, FontWeight weight) =>
-        style?.copyWith(fontWeight: weight, letterSpacing: -0.3);
+    TextStyle? style(
+      TextStyle? s, {
+      required double letterSpacing,
+      FontWeight? weight,
+    }) => s?.copyWith(fontWeight: weight, letterSpacing: letterSpacing);
     return base.copyWith(
-      displaySmall: tight(base.displaySmall, FontWeight.w800),
-      headlineMedium: tight(base.headlineMedium, FontWeight.w800),
-      headlineSmall: tight(base.headlineSmall, FontWeight.w800),
-      titleLarge: tight(base.titleLarge, FontWeight.w700),
-      titleMedium: base.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-      titleSmall: base.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-      labelLarge: base.labelLarge?.copyWith(fontWeight: FontWeight.w600),
-      labelMedium: base.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+      displaySmall: style(
+        base.displaySmall,
+        weight: FontWeight.w800,
+        letterSpacing: -0.5,
+      ),
+      headlineMedium: style(
+        base.headlineMedium,
+        weight: FontWeight.w800,
+        letterSpacing: -0.5,
+      ),
+      headlineSmall: style(
+        base.headlineSmall,
+        weight: FontWeight.w800,
+        letterSpacing: -0.4,
+      ),
+      titleLarge: style(
+        base.titleLarge,
+        weight: FontWeight.w700,
+        letterSpacing: -0.3,
+      ),
+      titleMedium: style(
+        base.titleMedium,
+        weight: FontWeight.w700,
+        letterSpacing: -0.1,
+      ),
+      titleSmall: style(
+        base.titleSmall,
+        weight: FontWeight.w600,
+        letterSpacing: -0.1,
+      ),
+      bodyLarge: style(base.bodyLarge, letterSpacing: 0),
+      bodyMedium: style(base.bodyMedium, letterSpacing: 0),
+      bodySmall: style(base.bodySmall, letterSpacing: 0.1),
+      labelLarge: style(
+        base.labelLarge,
+        weight: FontWeight.w600,
+        letterSpacing: 0,
+      ),
+      labelMedium: style(
+        base.labelMedium,
+        weight: FontWeight.w600,
+        letterSpacing: 0.1,
+      ),
+      labelSmall: style(base.labelSmall, letterSpacing: 0.2),
     );
   }
 }
