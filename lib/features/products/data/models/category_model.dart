@@ -9,6 +9,7 @@ abstract class CategoryModel with _$CategoryModel {
   const factory CategoryModel({
     required String slug,
     required String name,
+    String? imageUrl,
   }) = _CategoryModel;
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) =>
@@ -16,5 +17,5 @@ abstract class CategoryModel with _$CategoryModel {
 }
 
 extension CategoryModelX on CategoryModel {
-  Category toEntity() => Category(slug: slug, name: name);
+  Category toEntity() => Category(slug: slug, name: name, imageUrl: imageUrl);
 }

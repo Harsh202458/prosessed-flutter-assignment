@@ -7,7 +7,15 @@ part of 'category_model.dart';
 // **************************************************************************
 
 _CategoryModel _$CategoryModelFromJson(Map<String, dynamic> json) =>
-    _CategoryModel(slug: json['slug'] as String, name: json['name'] as String);
+    _CategoryModel(
+      slug: json['slug'] as String,
+      name: json['name'] as String,
+      imageUrl: json['imageUrl'] as String?,
+    );
 
 Map<String, dynamic> _$CategoryModelToJson(_CategoryModel instance) =>
-    <String, dynamic>{'slug': instance.slug, 'name': instance.name};
+    <String, dynamic>{
+      'slug': instance.slug,
+      'name': instance.name,
+      'imageUrl': instance.imageUrl,
+    };

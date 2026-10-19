@@ -52,13 +52,40 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
     return ProductPageModel.fromJson(json);
   }
 
+  /// Categories with a representative photo each. The photos come from a
+  /// single lightweight request (every product's category and thumbnail);
+  /// if it fails the categories are still returned, just without images.
   @override
   Future<List<CategoryModel>> getCategories() async {
-    final json = await _get<List<dynamic>>(ApiEndpoints.categories);
+    final (json, thumbnails) = await (
+      _get<List<dynamic>>(ApiEndpoints.categories),
+      _categoryThumbnails(),
+    ).wait;
     return [
       for (final item in json)
         CategoryModel.fromJson(item as Map<String, dynamic>),
-    ];
+    ].map((c) => c.copyWith(imageUrl: thumbnails[c.slug])).toList();
+  }
+
+  Future<Map<String, String>> _categoryThumbnails() async {
+    try {
+      final json = await _get<Map<String, dynamic>>(
+        ApiEndpoints.products,
+        const {'limit': 0, 'select': 'category,thumbnail'},
+      );
+      final thumbnails = <String, String>{};
+      for (final item in json['products'] as List<dynamic>) {
+        final product = item as Map<String, dynamic>;
+        final category = product['category'];
+        final thumbnail = product['thumbnail'];
+        if (category is String && thumbnail is String) {
+          thumbnails.putIfAbsent(category, () => thumbnail);
+        }
+      }
+      return thumbnails;
+    } on Object {
+      return const {};
+    }
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
@@ -35,28 +36,65 @@ class CategoryChips extends StatelessWidget {
           CategoriesStatus.success => _list([
             _chip(context, 'All', null, Icons.grid_view_rounded),
             for (final c in state.categories)
-              _chip(context, c.name, c.slug, CategoryStyle.iconFor(c.slug)),
+              _chip(
+                context,
+                c.name,
+                c.slug,
+                CategoryStyle.iconFor(c.slug),
+                imageUrl: c.imageUrl,
+              ),
           ]),
         },
       ),
     );
   }
 
+  /// The photo sits in the label row rather than the chip's avatar slot,
+  /// which can't be taller than the label text.
+  static const double _imageSize = 28;
+
   Widget _chip(
     BuildContext context,
     String label,
     String? slug,
-    IconData icon,
-  ) {
+    IconData icon, {
+    String? imageUrl,
+  }) {
     final scheme = Theme.of(context).colorScheme;
     final selected = selectedSlug == slug;
+    final iconAvatar = Icon(
+      icon,
+      size: 18,
+      color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
+    );
+    final leading = imageUrl == null
+        ? iconAvatar
+        : SizedBox.square(
+            dimension: _imageSize,
+            child: CircleAvatar(
+              backgroundColor: scheme.surfaceContainerLowest,
+              child: ClipOval(
+                child: Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.contain,
+                    placeholder: (_, _) => iconAvatar,
+                    errorWidget: (_, _, _) => iconAvatar,
+                  ),
+                ),
+              ),
+            ),
+          );
     return ChoiceChip(
-      avatar: Icon(
-        icon,
-        size: 18,
-        color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          leading,
+          const SizedBox(width: AppSpacing.sm),
+          Text(label),
+        ],
       ),
-      label: Text(label),
       selected: selected,
       onSelected: (_) => onSelected(slug),
     );
