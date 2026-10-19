@@ -129,16 +129,17 @@ class _CartContent extends StatelessWidget {
     final cubit = context.read<CartCubit>();
     final scheme = Theme.of(context).colorScheme;
 
-    final list = ListView.separated(
+    Widget list({Widget? footer}) => ListView.separated(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
         AppSpacing.sm,
         AppSpacing.lg,
         AppSpacing.lg,
       ),
-      itemCount: state.items.length,
+      itemCount: state.items.length + (footer == null ? 0 : 1),
       separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
       itemBuilder: (context, index) {
+        if (index == state.items.length) return footer;
         final item = state.items[index];
         return CartItemTile(
           key: ValueKey(item.productId),
@@ -149,14 +150,10 @@ class _CartContent extends StatelessWidget {
         );
       },
     );
-    final summary = CartSummary(
-      totals: state.totals,
-      isPlacingOrder: state.isPlacingOrder,
-      onPlaceOrder: () {
-        hideAppSnackBar(context);
-        unawaited(cubit.placeOrder());
-      },
-    );
+    void placeOrder() {
+      hideAppSnackBar(context);
+      unawaited(cubit.placeOrder());
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -168,7 +165,7 @@ class _CartContent extends StatelessWidget {
           return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: list),
+              Expanded(child: list()),
               SizedBox(
                 width: 360,
                 child: SingleChildScrollView(
@@ -181,7 +178,11 @@ class _CartContent extends StatelessWidget {
                   child: Card(
                     child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.xl),
-                      child: summary,
+                      child: CartSummary(
+                        totals: state.totals,
+                        isPlacingOrder: state.isPlacingOrder,
+                        onPlaceOrder: placeOrder,
+                      ),
                     ),
                   ),
                 ),
@@ -189,20 +190,36 @@ class _CartContent extends StatelessWidget {
             ],
           );
         }
+        // Phones: the breakdown scrolls with the items; only the total and
+        // the button stay pinned, so the fixed panel stays short.
         return Column(
           children: [
-            Expanded(child: list),
+            Expanded(
+              child: list(
+                footer: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    child: CartBreakdown(totals: state.totals),
+                  ),
+                ),
+              ),
+            ),
             Material(
               color: scheme.surfaceContainer,
               child: SafeArea(
                 top: false,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: constraints.maxHeight * 0.6,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.lg,
+                    AppSpacing.md,
+                    AppSpacing.lg,
+                    AppSpacing.md,
                   ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    child: summary,
+                  child: CartSummary(
+                    totals: state.totals,
+                    isPlacingOrder: state.isPlacingOrder,
+                    onPlaceOrder: placeOrder,
+                    showBreakdown: false,
                   ),
                 ),
               ),

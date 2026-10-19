@@ -4,18 +4,60 @@ import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/core/widgets/app_button.dart';
 import 'package:shopsphere/features/cart/domain/entities/cart_totals.dart';
 
-/// Subtotal, discount and total with the "Place order" button.
+/// Total and the "Place order" button, optionally preceded by the
+/// [CartBreakdown]. On phones the breakdown scrolls with the items and only
+/// the total and button stay pinned, keeping the fixed panel short.
 class CartSummary extends StatelessWidget {
   const CartSummary({
     required this.totals,
     required this.isPlacingOrder,
     required this.onPlaceOrder,
+    this.showBreakdown = true,
     super.key,
   });
 
   final CartTotals totals;
   final bool isPlacingOrder;
   final VoidCallback onPlaceOrder;
+  final bool showBreakdown;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (showBreakdown) ...[
+          CartBreakdown(totals: totals),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
+            child: Divider(height: 1),
+          ),
+        ],
+        _Row(
+          label: 'Total',
+          value: Formatters.price(totals.total),
+          style: theme.textTheme.titleLarge,
+        ),
+        SizedBox(height: showBreakdown ? AppSpacing.lg : AppSpacing.md),
+        AppButton(
+          label: 'Place order',
+          icon: Icons.lock_outline_rounded,
+          isLoading: isPlacingOrder,
+          onPressed: onPlaceOrder,
+        ),
+      ],
+    );
+  }
+}
+
+/// Subtotal, discount and delivery lines, plus the simulated-order note.
+class CartBreakdown extends StatelessWidget {
+  const CartBreakdown({required this.totals, super.key});
+
+  final CartTotals totals;
 
   @override
   Widget build(BuildContext context) {
@@ -42,26 +84,9 @@ class CartSummary extends StatelessWidget {
         ],
         const SizedBox(height: AppSpacing.sm),
         const _Row(label: 'Delivery', value: 'Free'),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: AppSpacing.md),
-          child: Divider(height: 1),
-        ),
-        _Row(
-          label: 'Total',
-          value: Formatters.price(totals.total),
-          style: theme.textTheme.titleLarge,
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        AppButton(
-          label: 'Place order',
-          icon: Icons.lock_outline_rounded,
-          isLoading: isPlacingOrder,
-          onPressed: onPlaceOrder,
-        ),
-        const SizedBox(height: AppSpacing.sm),
+        const SizedBox(height: AppSpacing.md),
         Text(
           'Orders are simulated by DummyJSON. No payment is taken.',
-          textAlign: TextAlign.center,
           style: theme.textTheme.bodySmall?.copyWith(
             color: scheme.onSurfaceVariant,
           ),
