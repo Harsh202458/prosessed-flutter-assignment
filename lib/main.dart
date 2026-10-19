@@ -9,6 +9,7 @@ import 'package:shopsphere/core/theme/theme_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,8 @@ Future<void> main() async {
   unawaited(cartCubit.load());
   final connectivityCubit = sl<ConnectivityCubit>();
   unawaited(connectivityCubit.start());
+  final wishlistCubit = sl<WishlistCubit>();
+  unawaited(wishlistCubit.load());
 
   runApp(
     ShopSphereApp(
@@ -28,6 +31,7 @@ Future<void> main() async {
       profileCubit: sl<ProfileCubit>(),
       themeCubit: sl<ThemeCubit>(),
       connectivityCubit: connectivityCubit,
+      wishlistCubit: wishlistCubit,
     ),
   );
 }

@@ -9,6 +9,7 @@ import 'package:shopsphere/core/theme/theme_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 class ShopSphereApp extends StatelessWidget {
   const ShopSphereApp({
@@ -18,6 +19,7 @@ class ShopSphereApp extends StatelessWidget {
     required this.profileCubit,
     required this.themeCubit,
     required this.connectivityCubit,
+    required this.wishlistCubit,
     super.key,
   });
 
@@ -27,6 +29,7 @@ class ShopSphereApp extends StatelessWidget {
   final ProfileCubit profileCubit;
   final ThemeCubit themeCubit;
   final ConnectivityCubit connectivityCubit;
+  final WishlistCubit wishlistCubit;
 
   void _onAuthChanged(BuildContext context, AuthState state) {
     switch (state.status) {
@@ -34,9 +37,10 @@ class ShopSphereApp extends StatelessWidget {
         unawaited(profileCubit.load());
       case AuthStatus.unauthenticated:
         // Signing out (by choice or on session expiry) clears the local
-        // session: the profile and the cart.
+        // session: the profile, the cart and the wishlist.
         profileCubit.reset();
         unawaited(cartCubit.clear());
+        unawaited(wishlistCubit.clear());
       case AuthStatus.unknown:
         break;
     }
@@ -51,6 +55,7 @@ class ShopSphereApp extends StatelessWidget {
         BlocProvider.value(value: profileCubit),
         BlocProvider.value(value: themeCubit),
         BlocProvider.value(value: connectivityCubit),
+        BlocProvider.value(value: wishlistCubit),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listenWhen: (previous, current) => previous.status != current.status,

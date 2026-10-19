@@ -38,6 +38,10 @@ import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
+import 'package:shopsphere/features/wishlist/data/datasources/wishlist_local_data_source.dart';
+import 'package:shopsphere/features/wishlist/data/repositories/wishlist_repository_impl.dart';
+import 'package:shopsphere/features/wishlist/domain/repositories/wishlist_repository.dart';
+import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
 /// Global service locator. Only the composition root and route builders use
 /// it; widgets receive their blocs through `BlocProvider`.
@@ -54,6 +58,9 @@ Future<void> configureDependencies() async {
   _registerAuth();
   _registerProducts(productsBox);
   _registerCart(cartBox);
+  _registerWishlist(
+    await Hive.openBox<String>(WishlistLocalDataSourceImpl.boxName),
+  );
   sl.registerLazySingleton<GoRouter>(() => createRouter(sl()));
 }
 
@@ -136,4 +143,15 @@ void _registerCart(Box<String> cartBox) {
     ..registerLazySingleton(
       () => CartCubit(repository: sl(), placeOrder: sl()),
     );
+}
+
+void _registerWishlist(Box<String> wishlistBox) {
+  sl
+    ..registerLazySingleton<WishlistLocalDataSource>(
+      () => WishlistLocalDataSourceImpl(wishlistBox),
+    )
+    ..registerLazySingleton<WishlistRepository>(
+      () => WishlistRepositoryImpl(sl()),
+    )
+    ..registerLazySingleton(() => WishlistCubit(sl()));
 }
