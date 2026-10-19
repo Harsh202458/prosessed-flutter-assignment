@@ -73,7 +73,9 @@ phones to tablets in landscape.
 ### Extra polish
 
 - Stock-aware cart: the details page knows what's already in your cart ("2 in your cart · 3 more available") and never lets you exceed stock
-- Personalised greeting, promo carousel that filters by category, category icons, section titles that follow the current filter
+- Personalised greeting, promo carousel that filters by category, category chips with a real product photo each (one lightweight request), section titles that follow the current filter
+- Branded launcher icon (adaptive on Android) and a brand-red native splash, so launch never flashes white
+- On short landscape screens the promo banner steps aside so products stay visible
 - Reduced-motion aware: entrance animations, carousel auto-advance and badge bounce switch off when the OS asks
 - Every icon button has a tooltip / semantic label; tap targets are at least 48 dp
 
