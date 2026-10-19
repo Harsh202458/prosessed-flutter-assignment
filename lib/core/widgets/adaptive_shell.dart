@@ -95,6 +95,9 @@ class AdaptiveShell extends StatelessWidget {
               selectedIndex: navigationShell.currentIndex,
               onDestinationSelected: (index) => _onSelect(context, index),
               extended: size.isExpanded,
+              minWidth: 72,
+              // Centred vertically so a short landscape screen looks balanced.
+              groupAlignment: 0,
               labelType: size.isExpanded
                   ? NavigationRailLabelType.none
                   : NavigationRailLabelType.all,
