@@ -31,21 +31,6 @@ class ShopSphereApp extends StatelessWidget {
   final ConnectivityCubit connectivityCubit;
   final WishlistCubit wishlistCubit;
 
-  void _onAuthChanged(BuildContext context, AuthState state) {
-    switch (state.status) {
-      case AuthStatus.authenticated:
-        unawaited(profileCubit.load());
-      case AuthStatus.unauthenticated:
-        // Signing out (by choice or on session expiry) clears the local
-        // session: the profile, the cart and the wishlist.
-        profileCubit.reset();
-        unawaited(cartCubit.clear());
-        unawaited(wishlistCubit.clear());
-      case AuthStatus.unknown:
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -57,9 +42,15 @@ class ShopSphereApp extends StatelessWidget {
         BlocProvider.value(value: connectivityCubit),
         BlocProvider.value(value: wishlistCubit),
       ],
-      child: BlocListener<AuthBloc, AuthState>(
-        listenWhen: (previous, current) => previous.status != current.status,
-        listener: _onAuthChanged,
+      child: SessionEffects(
+        onSignedIn: () => unawaited(profileCubit.load()),
+        onSignedOut: () {
+          // Signing out (by choice or on session expiry) clears the local
+          // session: the profile, the cart and the wishlist.
+          profileCubit.reset();
+          unawaited(cartCubit.clear());
+          unawaited(wishlistCubit.clear());
+        },
         child: BlocBuilder<ThemeCubit, ThemeMode>(
           builder: (context, themeMode) => MaterialApp.router(
             title: 'ShopSphere',
@@ -71,6 +62,56 @@ class ShopSphereApp extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Runs [onSignedIn] / [onSignedOut] whenever the session changes, and once
+/// for the session state found when it is first built.
+///
+/// The initial check matters: `main` starts the session check before the
+/// widget tree exists, and on a fast device the result can arrive before a
+/// plain listener subscribes, which would silently skip loading the profile.
+class SessionEffects extends StatefulWidget {
+  const SessionEffects({
+    required this.onSignedIn,
+    required this.onSignedOut,
+    required this.child,
+    super.key,
+  });
+
+  final VoidCallback onSignedIn;
+  final VoidCallback onSignedOut;
+  final Widget child;
+
+  @override
+  State<SessionEffects> createState() => _SessionEffectsState();
+}
+
+class _SessionEffectsState extends State<SessionEffects> {
+  @override
+  void initState() {
+    super.initState();
+    _handle(context.read<AuthBloc>().state);
+  }
+
+  void _handle(AuthState state) {
+    switch (state.status) {
+      case AuthStatus.authenticated:
+        widget.onSignedIn();
+      case AuthStatus.unauthenticated:
+        widget.onSignedOut();
+      case AuthStatus.unknown:
+        break;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (previous, current) => previous.status != current.status,
+      listener: (_, state) => _handle(state),
+      child: widget.child,
     );
   }
 }
