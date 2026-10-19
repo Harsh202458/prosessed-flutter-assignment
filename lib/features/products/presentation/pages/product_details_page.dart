@@ -20,6 +20,7 @@ import 'package:shopsphere/features/products/presentation/widgets/product_image_
 import 'package:shopsphere/features/products/presentation/widgets/rating_view.dart';
 import 'package:shopsphere/features/products/presentation/widgets/review_tile.dart';
 import 'package:shopsphere/features/products/presentation/widgets/stock_badge.dart';
+import 'package:shopsphere/features/wishlist/presentation/widgets/wishlist_button.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   const ProductDetailsPage({
@@ -73,6 +74,8 @@ class ProductDetailsPage extends StatelessWidget {
                     automaticallyImplyLeading: false,
                     title: const Text('Product details'),
                     actions: [
+                      if (state.product ?? preview case final product?)
+                        WishlistButton(product: product),
                       IconButton(
                         tooltip: 'Close details',
                         onPressed: onClose,
@@ -81,7 +84,13 @@ class ProductDetailsPage extends StatelessWidget {
                       const SizedBox(width: AppSpacing.xs),
                     ],
                   )
-                : AppBar(),
+                : AppBar(
+                    actions: [
+                      if (state.product ?? preview case final product?)
+                        WishlistButton(product: product),
+                      const SizedBox(width: AppSpacing.xs),
+                    ],
+                  ),
             body: switch (state.status) {
               ProductDetailsStatus.loading => _DetailsLayout(
                 product: preview,

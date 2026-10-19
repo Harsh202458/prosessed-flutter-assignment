@@ -7,6 +7,7 @@ import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_card.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_grid_layout.dart';
+import 'package:shopsphere/features/wishlist/presentation/widgets/wishlist_button.dart';
 
 /// The loaded products plus the infinite-scroll footer, as slivers.
 class ProductGridSliver extends StatelessWidget {
@@ -45,6 +46,10 @@ class ProductGridSliver extends StatelessWidget {
                     child: ProductCard(
                       product: product,
                       selected: product.id == selectedProductId,
+                      trailingAction: WishlistButton(
+                        product: product,
+                        overlay: true,
+                      ),
                       onTap: () => onProductTap(product),
                     ),
                   );

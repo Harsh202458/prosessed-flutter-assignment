@@ -13,11 +13,15 @@ class ProductCard extends StatelessWidget {
     required this.product,
     this.onTap,
     this.selected = false,
+    this.trailingAction,
     super.key,
   });
 
   final Product product;
   final VoidCallback? onTap;
+
+  /// Optional button over the photo's top-right corner (the wishlist heart).
+  final Widget? trailingAction;
 
   /// Highlighted as the product open in the master-detail pane.
   final bool selected;
@@ -101,6 +105,12 @@ class ProductCard extends StatelessWidget {
                         background: scheme.primary,
                         foreground: scheme.onPrimary,
                       ),
+                    ),
+                  if (trailingAction != null)
+                    Positioned(
+                      top: AppSpacing.xxs,
+                      right: AppSpacing.xxs,
+                      child: trailingAction!,
                     ),
                   if (!product.isInStock)
                     Positioned(
