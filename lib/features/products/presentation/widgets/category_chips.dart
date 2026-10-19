@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/widgets/shimmer_box.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
@@ -72,7 +73,7 @@ class CategoryChips extends StatelessWidget {
         : SizedBox.square(
             dimension: _imageSize,
             child: CircleAvatar(
-              backgroundColor: scheme.surfaceContainerLowest,
+              backgroundColor: AppColors.productPhoto,
               child: ClipOval(
                 child: Padding(
                   padding: const EdgeInsets.all(3),

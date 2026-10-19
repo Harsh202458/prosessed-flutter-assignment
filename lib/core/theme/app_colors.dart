@@ -8,4 +8,8 @@ abstract final class AppColors {
 
   /// Rating stars.
   static const Color rating = Color(0xFFF5A524);
+
+  /// Behind product photos, light in both themes: the photos are shot on
+  /// white and dark products vanish on a dark background.
+  static const Color productPhoto = Color(0xFFF7F3F2);
 }
