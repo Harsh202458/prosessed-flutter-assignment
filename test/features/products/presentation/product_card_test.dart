@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shopsphere/core/theme/app_theme.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_card.dart';
+import 'package:shopsphere/l10n/app_localizations.dart';
 
 void main() {
   const product = Product(
@@ -21,6 +22,8 @@ void main() {
     const width = 156.0;
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.light,
         home: MediaQuery(
           data: MediaQueryData(textScaler: TextScaler.linear(textScale)),

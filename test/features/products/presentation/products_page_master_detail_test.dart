@@ -12,6 +12,7 @@ import 'package:shopsphere/features/products/presentation/cubit/categories_cubit
 import 'package:shopsphere/features/products/presentation/pages/products_page.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
+import 'package:shopsphere/l10n/app_localizations.dart';
 
 class _MockListBloc extends MockBloc<ProductListEvent, ProductListState>
     implements ProductListBloc {}
@@ -92,6 +93,8 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: AppTheme.light,
           // Skips the carousel timer and entrance animations.
           builder: (context, child) => MediaQuery(

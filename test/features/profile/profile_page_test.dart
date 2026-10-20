@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shopsphere/core/l10n/locale_cubit.dart';
 import 'package:shopsphere/core/theme/app_theme.dart';
 import 'package:shopsphere/core/theme/theme_cubit.dart';
 import 'package:shopsphere/features/auth/domain/entities/user.dart';
@@ -10,6 +11,7 @@ import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/pages/profile_page.dart';
 import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
+import 'package:shopsphere/l10n/app_localizations.dart';
 
 class _MockProfileCubit extends MockCubit<ProfileState>
     implements ProfileCubit {}
@@ -22,11 +24,14 @@ class _MockAuthBloc extends MockBloc<AuthEvent, AuthState>
 
 class _MockThemeCubit extends MockCubit<ThemeMode> implements ThemeCubit {}
 
+class _MockLocaleCubit extends MockCubit<Locale?> implements LocaleCubit {}
+
 void main() {
   late _MockWishlistCubit wishlistCubit;
   late _MockProfileCubit profileCubit;
   late _MockAuthBloc authBloc;
   late _MockThemeCubit themeCubit;
+  late _MockLocaleCubit localeCubit;
 
   const user = User(
     id: 1,
@@ -47,17 +52,21 @@ void main() {
     authBloc = _MockAuthBloc();
     themeCubit = _MockThemeCubit();
     when(() => themeCubit.state).thenReturn(ThemeMode.system);
+    localeCubit = _MockLocaleCubit();
+    when(() => localeCubit.state).thenReturn(null);
     when(() => authBloc.state).thenReturn(const AuthState.authenticated());
   });
 
   Future<void> pump(WidgetTester tester, ProfileState state) async {
     when(() => profileCubit.state).thenReturn(state);
     tester.view
-      ..physicalSize = const Size(400, 1200)
+      ..physicalSize = const Size(400, 1500)
       ..devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.light,
         home: MultiBlocProvider(
           providers: [
@@ -65,6 +74,7 @@ void main() {
             BlocProvider<WishlistCubit>.value(value: wishlistCubit),
             BlocProvider<AuthBloc>.value(value: authBloc),
             BlocProvider<ThemeCubit>.value(value: themeCubit),
+            BlocProvider<LocaleCubit>.value(value: localeCubit),
           ],
           child: const ProfilePage(),
         ),

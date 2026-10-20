@@ -8,6 +8,7 @@ import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/wishlist/domain/repositories/wishlist_repository.dart';
 import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 import 'package:shopsphere/features/wishlist/presentation/widgets/wishlist_button.dart';
+import 'package:shopsphere/l10n/app_localizations.dart';
 
 class _MockRepository extends Mock implements WishlistRepository {}
 
@@ -36,6 +37,8 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.light,
         home: BlocProvider.value(
           value: cubit,

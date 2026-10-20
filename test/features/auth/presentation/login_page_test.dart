@@ -7,6 +7,7 @@ import 'package:shopsphere/core/theme/app_theme.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/auth/presentation/cubit/login_cubit.dart';
 import 'package:shopsphere/features/auth/presentation/pages/login_page.dart';
+import 'package:shopsphere/l10n/app_localizations.dart';
 
 class _MockAuthBloc extends MockBloc<AuthEvent, AuthState>
     implements AuthBloc {}
@@ -28,6 +29,7 @@ void main() {
     LoginState state = const LoginState(),
     Size size = const Size(360, 740),
     double textScale = 1,
+    Locale locale = const Locale('en'),
   }) async {
     when(() => loginCubit.state).thenReturn(state);
     tester.view
@@ -37,6 +39,9 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: locale,
         theme: AppTheme.light,
         builder: (context, child) => MediaQuery(
           data: MediaQuery.of(
@@ -85,6 +90,19 @@ void main() {
     );
 
     expect(find.text('Invalid username or password.'), findsOneWidget);
+  });
+
+  testWidgets('renders in Hindi, including validation messages', (
+    tester,
+  ) async {
+    await pumpLogin(tester, locale: const Locale('hi'));
+
+    expect(find.text('फिर से स्वागत है'), findsOneWidget);
+    await tester.tap(find.text('साइन इन करें'));
+    await tester.pump();
+
+    expect(find.text('कृपया अपना यूज़रनेम डालें'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('lays out without overflow on a phone at 1.3x and in landscape', (

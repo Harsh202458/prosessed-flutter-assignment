@@ -8,6 +8,7 @@ import 'package:shopsphere/features/cart/domain/entities/cart_item.dart';
 import 'package:shopsphere/features/cart/domain/usecases/calculate_cart_totals.dart';
 import 'package:shopsphere/features/cart/presentation/cubit/cart_cubit.dart';
 import 'package:shopsphere/features/cart/presentation/pages/cart_page.dart';
+import 'package:shopsphere/l10n/app_localizations.dart';
 
 class _MockCartCubit extends MockCubit<CartState> implements CartCubit {}
 
@@ -20,6 +21,8 @@ void main() {
     when(() => cubit.state).thenReturn(state);
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.light,
         home: BlocProvider<CartCubit>.value(
           value: cubit,

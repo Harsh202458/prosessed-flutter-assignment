@@ -9,6 +9,7 @@ import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
 import 'package:shopsphere/features/products/presentation/pages/product_details_page.dart';
 import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
+import 'package:shopsphere/l10n/app_localizations.dart';
 
 class _MockDetailsCubit extends MockCubit<ProductDetailsState>
     implements ProductDetailsCubit {}
@@ -46,6 +47,8 @@ void main() {
     when(() => cubit.state).thenReturn(state);
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
         theme: AppTheme.light,
         home: MultiBlocProvider(
           providers: [
