@@ -1,0 +1,401 @@
+{
+  "@@locale": "en",
+  "appName": "ShopSphere",
+  "appTagline": "Everything you love, in one place.",
+  "logoLabel": "ShopSphere logo",
+  "navShop": "Shop",
+  "navCart": "Cart",
+  "navProfile": "Profile",
+  "navItemsLabel": "{label}, {count, plural, =1{1 item} other{{count} items}}",
+  "@navItemsLabel": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loading": "Loading",
+  "retry": "Retry",
+  "somethingWentWrong": "Something went wrong",
+  "cancel": "Cancel",
+  "undo": "Undo",
+  "close": "Close",
+  "decreaseQuantity": "Decrease quantity",
+  "increaseQuantity": "Increase quantity",
+  "quantityLabel": "Quantity {quantity}",
+  "@quantityLabel": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
+  "offlineBanner": "You're offline. Showing saved products.",
+  "loginWelcome": "Welcome back",
+  "loginSubtitle": "Sign in to continue shopping",
+  "usernameLabel": "Username",
+  "usernameHint": "Enter your username",
+  "passwordLabel": "Password",
+  "passwordHint": "Enter your password",
+  "showPassword": "Show password",
+  "hidePassword": "Hide password",
+  "signIn": "Sign in",
+  "useDemoAccount": "Use demo account",
+  "usernameRequired": "Please enter your username",
+  "usernameTooShort": "Username must be at least {min} characters",
+  "@usernameTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "passwordRequired": "Please enter your password",
+  "passwordTooShort": "Password must be at least {min} characters",
+  "@passwordTooShort": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "errorServer": "Something went wrong on our side. Please try again.",
+  "errorNetwork": "No internet connection. Check your network and retry.",
+  "errorTimeout": "The request took too long. Please try again.",
+  "errorBadRequest": "The request could not be processed.",
+  "errorSessionExpired": "Your session has expired. Please log in again.",
+  "errorNotFound": "We couldn't find what you were looking for.",
+  "errorParse": "We received an unexpected response. Please try again.",
+  "errorCache": "Could not access saved data on this device.",
+  "errorUnknown": "An unexpected error occurred. Please try again.",
+  "errorInvalidCredentials": "Invalid username or password.",
+  "errorCartRestore": "We couldn't restore your saved cart.",
+  "errorCartSave": "Your cart couldn't be saved on this device.",
+  "errorCartEmpty": "Your cart is empty.",
+  "greetingMorning": "Good morning",
+  "greetingAfternoon": "Good afternoon",
+  "greetingEvening": "Good evening",
+  "greetingWithName": "{greeting}, {name}",
+  "@greetingWithName": {
+    "placeholders": {
+      "greeting": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeHeadline": "Discover something new",
+  "searchHint": "Search products",
+  "clearSearch": "Clear search",
+  "sortProducts": "Sort products",
+  "sortBy": "Sort by",
+  "sortRecommended": "Recommended",
+  "sortPriceLowHigh": "Price: low to high",
+  "sortPriceHighLow": "Price: high to low",
+  "sortTopRated": "Top rated",
+  "sortNameAZ": "Name: A to Z",
+  "promoBeautyEyebrow": "Glow-up week",
+  "promoBeautyTitle": "Beauty bestsellers on sale",
+  "promoPhonesEyebrow": "Just landed",
+  "promoPhonesTitle": "The latest smartphones",
+  "promoFurnitureEyebrow": "Make it cosy",
+  "promoFurnitureTitle": "Furniture for every room",
+  "promoLabel": "{eyebrow}. {title}. Shop now",
+  "@promoLabel": {
+    "placeholders": {
+      "eyebrow": {
+        "type": "String"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "shopNow": "Shop now",
+  "categoryAll": "All",
+  "categoriesError": "Couldn't load categories · Retry",
+  "allProducts": "All products",
+  "resultsFor": "Results for \"{query}\"",
+  "@resultsFor": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "productsLoadError": "Couldn't load products",
+  "noProductsTitle": "No products found",
+  "noSearchResults": "Nothing matches \"{query}\". Try a different search.",
+  "@noSearchResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "noProductsInCategory": "There are no products here yet.",
+  "clearFilters": "Clear filters",
+  "selectProductTitle": "Select a product",
+  "selectProductMessage": "Pick any product to see its photos, details and reviews here.",
+  "savedProductsFooter": "These are saved products. Pull to refresh when you're back online.",
+  "seenAllProducts": "You've seen all {count} products",
+  "@seenAllProducts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingProducts": "Loading products",
+  "outOfStock": "Out of stock",
+  "priceLabel": "Price {price}",
+  "@priceLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "priceWasLabel": "Price {price}, was {original}",
+  "@priceWasLabel": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      },
+      "original": {
+        "type": "String"
+      }
+    }
+  },
+  "ratedOutOf5": "Rated {rating} out of 5",
+  "@ratedOutOf5": {
+    "placeholders": {
+      "rating": {
+        "type": "String"
+      }
+    }
+  },
+  "productImageLabel": "{title}, image {index} of {count}",
+  "@productImageLabel": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      },
+      "index": {
+        "type": "int"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addedToCart": "Added {quantity} × {title} to your cart",
+  "@addedToCart": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      },
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "viewCart": "View cart",
+  "productDetails": "Product details",
+  "closeDetails": "Close details",
+  "productNotFoundTitle": "Product not found",
+  "productNotFoundMessage": "This product doesn't exist or is no longer available.",
+  "backToShop": "Back to shop",
+  "productLoadError": "Couldn't load this product",
+  "reviewCount": "{count, plural, =1{1 review} other{{count} reviews}}",
+  "@reviewCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "saveDiscount": "Save {percent}%",
+  "@saveDiscount": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "description": "Description",
+  "noDescription": "No description available.",
+  "customerReviews": "Customer reviews",
+  "noReviews": "No reviews yet.",
+  "loadingProduct": "Loading product",
+  "allInCart": "All in your cart",
+  "addWithTotal": "Add · {total}",
+  "@addWithTotal": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "inCartMoreAvailable": "{inCart} in your cart · {available} more available",
+  "@inCartMoreAvailable": {
+    "placeholders": {
+      "inCart": {
+        "type": "int"
+      },
+      "available": {
+        "type": "int"
+      }
+    }
+  },
+  "allStockInCart": "You have all {stock} in your cart",
+  "@allStockInCart": {
+    "placeholders": {
+      "stock": {
+        "type": "int"
+      }
+    }
+  },
+  "stockOnlyLeft": "Only {stock} left",
+  "@stockOnlyLeft": {
+    "placeholders": {
+      "stock": {
+        "type": "int"
+      }
+    }
+  },
+  "stockInStock": "In stock · {stock} available",
+  "@stockInStock": {
+    "placeholders": {
+      "stock": {
+        "type": "int"
+      }
+    }
+  },
+  "cartTitle": "Cart",
+  "clear": "Clear",
+  "clearCartTitle": "Clear your cart?",
+  "clearCartMessage": "This removes every item from your cart.",
+  "clearCart": "Clear cart",
+  "removedItem": "Removed {title}",
+  "@removedItem": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "removeItem": "Remove {title}",
+  "@removeItem": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "orderFailed": "Couldn't place your order. {reason}",
+  "@orderFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "cartEmptyTitle": "Your cart is empty",
+  "cartEmptyMessage": "Browse the shop and add something you love.",
+  "startShopping": "Start shopping",
+  "unitPriceEach": "{price} each",
+  "@unitPriceEach": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "subtotalItems": "Subtotal ({count, plural, =1{1 item} other{{count} items}})",
+  "@subtotalItems": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "discount": "Discount",
+  "delivery": "Delivery",
+  "free": "Free",
+  "total": "Total",
+  "placeOrder": "Place order",
+  "simulatedOrderNote": "Orders are simulated by DummyJSON. No payment is taken.",
+  "orderPlaced": "Order placed",
+  "orderThanks": "Thanks for shopping with ShopSphere. We'll get it packed and on its way.",
+  "orderNumber": "Order number",
+  "items": "Items",
+  "continueShopping": "Continue shopping",
+  "orderConfirmed": "Order confirmed",
+  "profileTitle": "Profile",
+  "logOutQuestion": "Log out?",
+  "logOutMessage": "You'll need to sign in again. Your cart on this device will be cleared.",
+  "logOut": "Log out",
+  "profileLoadError": "Couldn't load your profile",
+  "profileRefreshError": "Couldn't refresh your profile. {reason}",
+  "@profileRefreshError": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "contactDetails": "Contact details",
+  "email": "Email",
+  "phone": "Phone",
+  "notProvided": "Not provided",
+  "account": "Account",
+  "customerId": "Customer ID",
+  "appearance": "Appearance",
+  "themeSystem": "System",
+  "themeLight": "Light",
+  "themeDark": "Dark",
+  "language": "Language",
+  "languageSystem": "System",
+  "languageEnglish": "English",
+  "languageHindi": "हिन्दी",
+  "loadingProfile": "Loading profile",
+  "profilePhotoOf": "Profile photo of {name}",
+  "@profilePhotoOf": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "wishlist": "Wishlist",
+  "wishlistWithCount": "Wishlist ({count})",
+  "@wishlistWithCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wishlistEmptySubtitle": "Save products you love",
+  "wishlistSavedCount": "{count, plural, =1{1 saved item} other{{count} saved items}}",
+  "@wishlistSavedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wishlistEmptyTitle": "Your wishlist is empty",
+  "wishlistEmptyMessage": "Tap the heart on any product to save it here.",
+  "browseProducts": "Browse products",
+  "savedToWishlist": "Saved to your wishlist",
+  "removedFromWishlist": "Removed from your wishlist",
+  "saveToWishlist": "Save to wishlist",
+  "removeFromWishlist": "Remove from wishlist"
+}
