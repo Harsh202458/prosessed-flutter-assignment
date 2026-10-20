@@ -66,9 +66,10 @@ phones to tablets in landscape.
 - [x] **Light / dark / system theme** toggle that persists
 - [x] **Offline mode**: last product list and categories cached; "You're offline" banner; refreshes itself when the connection returns
 - [x] **Widget tests**, including overflow checks at 1.3× text scale and a tablet master–detail test
-- [x] **CI** with GitHub Actions: format check, `flutter analyze`, `flutter test --coverage`
+- [x] **CI** with GitHub Actions: format check, `flutter analyze`, `flutter test --coverage` (golden tests excluded, see Testing)
 - [x] **Wishlist** stored locally: heart on every card and on details, a Wishlist screen from Profile, undo on remove, cleared on sign-out
-- [ ] Localization (English + Hindi) — not built
+- [x] **Localization (English + Hindi)** with `gen-l10n`: every screen, validation and error message is translated; a System / English / हिन्दी picker on Profile is remembered across launches (product data from DummyJSON stays in English)
+- [x] **Golden tests** for the product card in light and dark themes, rendered with the real bundled font
 
 ### Extra polish
 
@@ -97,6 +98,7 @@ phones to tablets in landscape.
 | Images | `cached_network_image`, `shimmer` | Cached photos with placeholders and skeletons |
 | UI | `smooth_page_indicator`, Plus Jakarta Sans (bundled, OFL) | Carousel dots; a distinctive typeface without runtime font downloads |
 | Connectivity | `connectivity_plus` | Offline banner and automatic refresh |
+| Localization | `flutter_localizations`, `intl`, `gen-l10n` (ARB files) | Type-safe generated strings; English and Hindi |
 | Testing | `flutter_test`, `bloc_test`, `mocktail` | State-sequence tests and mocks without code generation |
 | Lints | `very_good_analysis` | Strict lint set; `flutter analyze` reports zero issues |
 
@@ -137,12 +139,14 @@ lib/
   core/
     di/                    # get_it registrations
     error/                 # exceptions, failures, Result<T>, mapper
+    l10n/                  # context.l10n, translated failure text, locale cubit
     network/               # Dio client, endpoints, auth interceptor, connectivity
     router/                # go_router config, route paths
     storage/               # token storage, settings storage
     theme/                 # Material 3 theme, colours, spacing, theme cubit
     utils/                 # breakpoints, formatters, validators, debounce transformer
     widgets/               # shared UI: ErrorView, EmptyView, shimmer, shell, banners…
+  l10n/                    # app_en.arb, app_hi.arb + generated AppLocalizations
   features/
     auth/      data · domain · presentation
     products/  data · domain · presentation
@@ -152,6 +156,7 @@ lib/
 test/
   fixtures/                # real DummyJSON responses
   core/ features/          # mirrors lib/
+  goldens/                 # golden images (tag: golden)
 ```
 
 ### One request, end to end (search)
@@ -241,8 +246,9 @@ flutter build apk --release
 flutter test --coverage
 ```
 
-- **132 tests**, all passing: repositories (success, server-failure and network-failure paths), use cases, every Bloc/Cubit state sequence (`bloc_test`), JSON parsing with real fixtures, and widget tests (validation, not-found, out-of-stock, cart totals, profile, overflow at 1.3× text, tablet master–detail).
-- **Line coverage: 75.9%** of hand-written code (generated `*.g.dart` / `*.freezed.dart` excluded; `coverage/lcov.info`).
+- **141 tests**, all passing: repositories (success, server-failure and network-failure paths), use cases, every Bloc/Cubit state sequence (`bloc_test`), JSON parsing with real fixtures, widget tests (validation, not-found, out-of-stock, cart totals, profile, wishlist, Hindi login screen, overflow at 1.3× text, tablet master–detail), translation key parity, and two golden tests.
+- **Golden tests** live in `test/goldens/` and are tagged `golden`. Font rendering differs slightly between operating systems, so CI skips them (`--exclude-tags golden`); run them locally with `flutter test --tags golden`, and refresh them with `flutter test --tags golden --update-goldens`.
+- **Line coverage: 75.6%** of hand-written code (generated `*.g.dart` / `*.freezed.dart` / localization files excluded; `coverage/lcov.info`).
 - CI runs format check, analyze and tests on every push (`.github/workflows/ci.yml`).
 
 ---
@@ -265,7 +271,8 @@ Any user from `GET https://dummyjson.com/users` can also sign in.
 - **Signing out clears the cart** as part of "clears the local session".
 - **Only the unfiltered first page is cached** for offline use, keeping the cache small and predictable.
 - **Release signing:** the APK is signed with the debug key so it installs anywhere; a real release would use an upload keystore kept out of the repo.
-- **Not done:** Hindi localization (bonus). With more time I would add it, golden tests, an integration test that drives login → order, and a real launcher icon/splash via `flutter_native_splash`.
+- **Product data isn't translated.** Titles, descriptions and API error messages come from DummyJSON in English; category names have Hindi labels in the app.
+- **With more time** I would add an integration test that drives login → order and more golden screens.
 
 ---
 
