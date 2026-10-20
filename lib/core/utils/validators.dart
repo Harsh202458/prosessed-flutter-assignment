@@ -1,23 +1,22 @@
-/// Form field validators. Each returns an error message, or `null` if valid.
+/// Why a form field is invalid. The UI turns it into translated text.
+enum FieldError { required, tooShort }
+
+/// Form field rules. Each returns the [FieldError], or `null` if valid.
 abstract final class Validators {
   static const int usernameMinLength = 3;
   static const int passwordMinLength = 6;
 
-  static String? username(String? value) {
+  static FieldError? username(String? value) {
     final text = value?.trim() ?? '';
-    if (text.isEmpty) return 'Please enter your username';
-    if (text.length < usernameMinLength) {
-      return 'Username must be at least $usernameMinLength characters';
-    }
+    if (text.isEmpty) return FieldError.required;
+    if (text.length < usernameMinLength) return FieldError.tooShort;
     return null;
   }
 
-  static String? password(String? value) {
+  static FieldError? password(String? value) {
     final text = value ?? '';
-    if (text.isEmpty) return 'Please enter your password';
-    if (text.length < passwordMinLength) {
-      return 'Password must be at least $passwordMinLength characters';
-    }
+    if (text.isEmpty) return FieldError.required;
+    if (text.length < passwordMinLength) return FieldError.tooShort;
     return null;
   }
 }
