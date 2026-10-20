@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/widgets/app_snack_bar.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
@@ -25,8 +26,8 @@ class WishlistButton extends StatelessWidget {
     if (!context.mounted) return;
     showAppSnackBar(
       context,
-      saved ? 'Saved to your wishlist' : 'Removed from your wishlist',
-      actionLabel: saved ? null : 'Undo',
+      saved ? context.l10n.savedToWishlist : context.l10n.removedFromWishlist,
+      actionLabel: saved ? null : context.l10n.undo,
       onAction: saved ? null : () => unawaited(cubit.toggle(product)),
     );
   }
@@ -54,7 +55,9 @@ class WishlistButton extends StatelessWidget {
     );
 
     return IconButton(
-      tooltip: saved ? 'Remove from wishlist' : 'Save to wishlist',
+      tooltip: saved
+          ? context.l10n.removeFromWishlist
+          : context.l10n.saveToWishlist,
       onPressed: () => unawaited(_toggle(context)),
       style: overlay
           ? IconButton.styleFrom(

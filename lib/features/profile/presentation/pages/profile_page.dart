@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
@@ -12,6 +13,7 @@ import 'package:shopsphere/features/auth/domain/entities/user.dart';
 import 'package:shopsphere/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:shopsphere/features/profile/presentation/widgets/appearance_selector.dart';
+import 'package:shopsphere/features/profile/presentation/widgets/language_selector.dart';
 import 'package:shopsphere/features/profile/presentation/widgets/user_avatar.dart';
 import 'package:shopsphere/features/wishlist/presentation/cubit/wishlist_cubit.dart';
 
@@ -24,19 +26,16 @@ class ProfilePage extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         icon: const Icon(Icons.logout_rounded),
-        title: const Text('Log out?'),
-        content: const Text(
-          "You'll need to sign in again. Your cart on this device will be "
-          'cleared.',
-        ),
+        title: Text(context.l10n.logOutQuestion),
+        content: Text(context.l10n.logOutMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Log out'),
+            child: Text(context.l10n.logOut),
           ),
         ],
       ),
@@ -52,15 +51,15 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(context.l10n.profileTitle)),
       body: BlocBuilder<ProfileCubit, ProfileState>(
         builder: (context, state) {
           final user = state.user;
           if (user == null) {
             return state.status == ProfileStatus.failure
                 ? ErrorView(
-                    title: "Couldn't load your profile",
-                    message: state.errorMessage ?? '',
+                    title: context.l10n.profileLoadError,
+                    message: context.l10n.errorText(state.errorMessage),
                     onRetry: () =>
                         unawaited(context.read<ProfileCubit>().load()),
                   )
@@ -83,39 +82,39 @@ class ProfilePage extends StatelessWidget {
                           const SizedBox(height: AppSpacing.lg),
                           MessageBanner(
                             tone: BannerTone.error,
-                            message:
-                                "Couldn't refresh your profile. "
-                                '${state.errorMessage ?? ''}',
+                            message: context.l10n.profileRefreshError(
+                              context.l10n.errorText(state.errorMessage),
+                            ),
                           ),
                         ],
                         const SizedBox(height: AppSpacing.xl),
                         _Section(
-                          title: 'Contact details',
+                          title: context.l10n.contactDetails,
                           children: [
                             _InfoTile(
                               icon: Icons.mail_outline_rounded,
-                              label: 'Email',
+                              label: context.l10n.email,
                               value: user.email,
                             ),
                             _InfoTile(
                               icon: Icons.phone_outlined,
-                              label: 'Phone',
-                              value: user.phone ?? 'Not provided',
+                              label: context.l10n.phone,
+                              value: user.phone ?? context.l10n.notProvided,
                             ),
                           ],
                         ),
                         const SizedBox(height: AppSpacing.lg),
                         _Section(
-                          title: 'Account',
+                          title: context.l10n.account,
                           children: [
                             _InfoTile(
                               icon: Icons.alternate_email_rounded,
-                              label: 'Username',
+                              label: context.l10n.usernameLabel,
                               value: user.username,
                             ),
                             _InfoTile(
                               icon: Icons.badge_outlined,
-                              label: 'Customer ID',
+                              label: context.l10n.customerId,
                               value: '#${user.id}',
                             ),
                           ],
@@ -129,11 +128,23 @@ class ProfilePage extends StatelessWidget {
                             bottom: AppSpacing.sm,
                           ),
                           child: Text(
-                            'Appearance',
+                            context.l10n.appearance,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ),
                         const AppearanceSelector(),
+                        const SizedBox(height: AppSpacing.lg),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            left: AppSpacing.xs,
+                            bottom: AppSpacing.sm,
+                          ),
+                          child: Text(
+                            context.l10n.language,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                        ),
+                        const LanguageSelector(),
                         const SizedBox(height: AppSpacing.xl),
                         OutlinedButton.icon(
                           onPressed: () => unawaited(_confirmLogout(context)),
@@ -143,7 +154,7 @@ class ProfilePage extends StatelessWidget {
                             ).colorScheme.error,
                           ),
                           icon: const Icon(Icons.logout_rounded),
-                          label: const Text('Log out'),
+                          label: Text(context.l10n.logOut),
                         ),
                       ],
                     ),
@@ -275,7 +286,7 @@ class _ProfileSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Loading profile',
+      label: context.l10n.loadingProfile,
       child: AppShimmer(
         child: ListView(
           physics: const NeverScrollableScrollPhysics(),
@@ -308,11 +319,11 @@ class _WishlistEntry extends StatelessWidget {
           Icons.favorite_border_rounded,
           color: theme.colorScheme.primary,
         ),
-        title: Text('Wishlist', style: theme.textTheme.titleSmall),
+        title: Text(context.l10n.wishlist, style: theme.textTheme.titleSmall),
         subtitle: Text(
           count == 0
-              ? 'Save products you love'
-              : '$count saved ${count == 1 ? 'item' : 'items'}',
+              ? context.l10n.wishlistEmptySubtitle
+              : context.l10n.wishlistSavedCount(count),
         ),
         trailing: const Icon(Icons.chevron_right_rounded),
         onTap: () => unawaited(context.push(AppRoutes.wishlist)),

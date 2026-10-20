@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/theme/theme_cubit.dart';
 
@@ -36,11 +37,19 @@ class AppearanceSelector extends StatelessWidget {
                 segments: [
                   segment(
                     ThemeMode.system,
-                    'System',
+                    context.l10n.themeSystem,
                     Icons.brightness_auto_outlined,
                   ),
-                  segment(ThemeMode.light, 'Light', Icons.light_mode_outlined),
-                  segment(ThemeMode.dark, 'Dark', Icons.dark_mode_outlined),
+                  segment(
+                    ThemeMode.light,
+                    context.l10n.themeLight,
+                    Icons.light_mode_outlined,
+                  ),
+                  segment(
+                    ThemeMode.dark,
+                    context.l10n.themeDark,
+                    Icons.dark_mode_outlined,
+                  ),
                 ],
                 selected: {mode},
                 onSelectionChanged: (selection) =>

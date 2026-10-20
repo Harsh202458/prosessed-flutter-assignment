@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 
 /// Circular avatar that falls back to the user's initials.
 class UserAvatar extends StatelessWidget {
@@ -39,7 +40,7 @@ class UserAvatar extends StatelessWidget {
 
     return Semantics(
       image: true,
-      label: 'Profile photo of $name',
+      label: context.l10n.profilePhotoOf(name),
       excludeSemantics: true,
       child: imageUrl.isEmpty
           ? fallback

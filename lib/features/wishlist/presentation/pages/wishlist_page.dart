@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
@@ -21,17 +22,21 @@ class WishlistPage extends StatelessWidget {
         final count = state.products.length;
         return Scaffold(
           appBar: AppBar(
-            title: Text(count == 0 ? 'Wishlist' : 'Wishlist ($count)'),
+            title: Text(
+              count == 0
+                  ? context.l10n.wishlist
+                  : context.l10n.wishlistWithCount(count),
+            ),
           ),
           body: count == 0
               ? EmptyView(
                   icon: Icons.favorite_border_rounded,
-                  title: 'Your wishlist is empty',
-                  message: 'Tap the heart on any product to save it here.',
+                  title: context.l10n.wishlistEmptyTitle,
+                  message: context.l10n.wishlistEmptyMessage,
                   action: FilledButton.icon(
                     onPressed: () => context.go(AppRoutes.products),
                     icon: const Icon(Icons.storefront_outlined),
-                    label: const Text('Browse products'),
+                    label: Text(context.l10n.browseProducts),
                   ),
                 )
               : CustomScrollView(
