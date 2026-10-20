@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/validators.dart';
 import 'package:shopsphere/core/widgets/app_button.dart';
@@ -38,6 +39,24 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
+  static String? _usernameError(AppLocalizations l10n, String? value) =>
+      switch (Validators.username(value)) {
+        FieldError.required => l10n.usernameRequired,
+        FieldError.tooShort => l10n.usernameTooShort(
+          Validators.usernameMinLength,
+        ),
+        null => null,
+      };
+
+  static String? _passwordError(AppLocalizations l10n, String? value) =>
+      switch (Validators.password(value)) {
+        FieldError.required => l10n.passwordRequired,
+        FieldError.tooShort => l10n.passwordTooShort(
+          Validators.passwordMinLength,
+        ),
+        null => null,
+      };
+
   void _fillDemoAccount() {
     _username.text = 'emilys';
     _password.text = 'emilyspass';
@@ -49,6 +68,7 @@ class _LoginFormState extends State<LoginForm> {
     final theme = Theme.of(context);
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
+        final l10n = context.l10n;
         return Form(
           key: _formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -56,21 +76,21 @@ class _LoginFormState extends State<LoginForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const _FieldLabel('Username'),
+                _FieldLabel(l10n.usernameLabel),
                 TextFormField(
                   controller: _username,
                   enabled: !state.isSubmitting,
                   textInputAction: TextInputAction.next,
                   autofillHints: const [AutofillHints.username],
                   autocorrect: false,
-                  decoration: const InputDecoration(
-                    hintText: 'Enter your username',
-                    prefixIcon: Icon(Icons.person_outline_rounded),
+                  decoration: InputDecoration(
+                    hintText: l10n.usernameHint,
+                    prefixIcon: const Icon(Icons.person_outline_rounded),
                   ),
-                  validator: Validators.username,
+                  validator: (value) => _usernameError(l10n, value),
                 ),
                 const SizedBox(height: AppSpacing.lg),
-                const _FieldLabel('Password'),
+                _FieldLabel(l10n.passwordLabel),
                 TextFormField(
                   controller: _password,
                   enabled: !state.isSubmitting,
@@ -79,15 +99,15 @@ class _LoginFormState extends State<LoginForm> {
                   autofillHints: const [AutofillHints.password],
                   onFieldSubmitted: (_) => _submit(),
                   decoration: InputDecoration(
-                    hintText: 'Enter your password',
+                    hintText: l10n.passwordHint,
                     prefixIcon: const Icon(Icons.lock_outline_rounded),
                     suffixIcon: IconButton(
                       onPressed: context
                           .read<LoginCubit>()
                           .togglePasswordVisibility,
                       tooltip: state.obscurePassword
-                          ? 'Show password'
-                          : 'Hide password',
+                          ? l10n.showPassword
+                          : l10n.hidePassword,
                       icon: Icon(
                         state.obscurePassword
                             ? Icons.visibility_outlined
@@ -95,19 +115,19 @@ class _LoginFormState extends State<LoginForm> {
                       ),
                     ),
                   ),
-                  validator: Validators.password,
+                  validator: (value) => _passwordError(l10n, value),
                 ),
                 if (state.status == LoginStatus.failure &&
                     state.errorMessage != null) ...[
                   const SizedBox(height: AppSpacing.lg),
                   MessageBanner(
-                    message: state.errorMessage!,
+                    message: l10n.errorText(state.errorMessage),
                     tone: BannerTone.error,
                   ),
                 ],
                 const SizedBox(height: AppSpacing.xl),
                 AppButton(
-                  label: 'Sign in',
+                  label: l10n.signIn,
                   isLoading: state.isSubmitting,
                   onPressed: _submit,
                 ),
@@ -115,7 +135,7 @@ class _LoginFormState extends State<LoginForm> {
                 TextButton(
                   onPressed: state.isSubmitting ? null : _fillDemoAccount,
                   child: Text(
-                    'Use demo account',
+                    l10n.useDemoAccount,
                     style: TextStyle(color: theme.colorScheme.primary),
                   ),
                 ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/widgets/app_logo.dart';
@@ -79,17 +80,17 @@ class _FormSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Welcome back', style: theme.textTheme.headlineSmall),
+          Text(context.l10n.loginWelcome, style: theme.textTheme.headlineSmall),
           const SizedBox(height: AppSpacing.xs),
           Text(
-            'Sign in to continue shopping',
+            context.l10n.loginSubtitle,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           if (signOutReason != null) ...[
             const SizedBox(height: AppSpacing.lg),
-            MessageBanner(message: signOutReason),
+            MessageBanner(message: context.l10n.errorText(signOutReason)),
           ],
           const SizedBox(height: AppSpacing.xl),
           const LoginForm(),
