@@ -4,13 +4,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:shopsphere/core/error/failures.dart';
 import 'package:shopsphere/core/error/result.dart';
 import 'package:shopsphere/features/auth/domain/entities/user.dart';
-import 'package:shopsphere/features/auth/domain/usecases/get_current_user.dart';
+import 'package:shopsphere/features/profile/domain/usecases/get_profile.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 
-class _MockGetCurrentUser extends Mock implements GetCurrentUser {}
+class _MockGetProfile extends Mock implements GetProfile {}
 
 void main() {
-  late _MockGetCurrentUser getCurrentUser;
+  late _MockGetProfile getProfile;
 
   const user = User(
     id: 1,
@@ -22,14 +22,14 @@ void main() {
     phone: '+81 965-431-3024',
   );
 
-  setUp(() => getCurrentUser = _MockGetCurrentUser());
+  setUp(() => getProfile = _MockGetProfile());
 
   blocTest<ProfileCubit, ProfileState>(
     'emits [loading, success] with the signed-in user',
     setUp: () => when(
-      () => getCurrentUser(),
+      () => getProfile(),
     ).thenAnswer((_) async => const Success(user)),
-    build: () => ProfileCubit(getCurrentUser),
+    build: () => ProfileCubit(getProfile),
     act: (cubit) => cubit.load(),
     expect: () => const [
       ProfileState(status: ProfileStatus.loading),
@@ -40,9 +40,9 @@ void main() {
   blocTest<ProfileCubit, ProfileState>(
     'emits failure with a retryable message when offline',
     setUp: () => when(
-      () => getCurrentUser(),
+      () => getProfile(),
     ).thenAnswer((_) async => const Err(NetworkFailure())),
-    build: () => ProfileCubit(getCurrentUser),
+    build: () => ProfileCubit(getProfile),
     act: (cubit) => cubit.load(),
     expect: () => [
       const ProfileState(status: ProfileStatus.loading),
@@ -56,9 +56,9 @@ void main() {
   blocTest<ProfileCubit, ProfileState>(
     'keeps the last user visible when a refresh fails',
     setUp: () => when(
-      () => getCurrentUser(),
+      () => getProfile(),
     ).thenAnswer((_) async => const Err(ServerFailure())),
-    build: () => ProfileCubit(getCurrentUser),
+    build: () => ProfileCubit(getProfile),
     seed: () => const ProfileState(status: ProfileStatus.success, user: user),
     act: (cubit) => cubit.load(),
     verify: (cubit) {
@@ -69,7 +69,7 @@ void main() {
 
   blocTest<ProfileCubit, ProfileState>(
     'forgets the user on reset (sign-out)',
-    build: () => ProfileCubit(getCurrentUser),
+    build: () => ProfileCubit(getProfile),
     seed: () => const ProfileState(status: ProfileStatus.success, user: user),
     act: (cubit) => cubit.reset(),
     expect: () => const [ProfileState()],

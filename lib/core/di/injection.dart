@@ -38,6 +38,9 @@ import 'package:shopsphere/features/products/domain/usecases/get_products.dart';
 import 'package:shopsphere/features/products/presentation/bloc/product_list_bloc.dart';
 import 'package:shopsphere/features/products/presentation/cubit/categories_cubit.dart';
 import 'package:shopsphere/features/products/presentation/cubit/product_details_cubit.dart';
+import 'package:shopsphere/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:shopsphere/features/profile/domain/repositories/profile_repository.dart';
+import 'package:shopsphere/features/profile/domain/usecases/get_profile.dart';
 import 'package:shopsphere/features/profile/presentation/cubit/profile_cubit.dart';
 import 'package:shopsphere/features/wishlist/data/datasources/wishlist_local_data_source.dart';
 import 'package:shopsphere/features/wishlist/data/repositories/wishlist_repository_impl.dart';
@@ -102,6 +105,10 @@ void _registerAuth() {
     ..registerLazySingleton(() => Logout(sl()))
     ..registerLazySingleton(() => CheckSession(sl()))
     ..registerLazySingleton(() => GetCurrentUser(sl()))
+    ..registerLazySingleton<ProfileRepository>(
+      () => ProfileRepositoryImpl(sl()),
+    )
+    ..registerLazySingleton(() => GetProfile(sl()))
     ..registerLazySingleton(() => ProfileCubit(sl()))
     ..registerLazySingleton(
       () => AuthBloc(checkSession: sl(), logout: sl(), sessionExpiry: sl()),
