@@ -59,18 +59,26 @@ abstract final class CategoryStyle {
 
   static IconData iconFor(String slug) => _icons[slug] ?? Icons.sell_outlined;
 
-  /// `home-decoration` → `Home Decoration` (or its Hindi name for `hi`).
+  /// `home-decoration` → `Home decoration`, `mens-shirts` → `Men's shirts`
+  /// (or the Hindi name for `hi`). Sentence case matches every other label
+  /// in the app.
   static String labelFor(String slug, {String languageCode = 'en'}) {
     if (languageCode == 'hi') {
       final hindi = _hindi[slug];
       if (hindi != null) return hindi;
     }
-    return _titleCase(slug);
+    return _sentenceCase(slug);
   }
 
-  static String _titleCase(String slug) => slug
-      .split('-')
-      .where((word) => word.isNotEmpty)
-      .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
-      .join(' ');
+  static const _possessives = {'mens': "men's", 'womens': "women's"};
+
+  static String _sentenceCase(String slug) {
+    final words = slug
+        .split('-')
+        .where((word) => word.isNotEmpty)
+        .map((word) => _possessives[word] ?? word)
+        .join(' ');
+    if (words.isEmpty) return words;
+    return '${words[0].toUpperCase()}${words.substring(1)}';
+  }
 }

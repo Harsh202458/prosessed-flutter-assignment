@@ -51,7 +51,7 @@ void main() {
       expect(find.text('-13%'), findsOneWidget);
       expect(find.text('Out of stock'), findsOneWidget);
       expect(
-        find.text('Home Decoration · A brand with a fairly long name'),
+        find.text('Home decoration · A brand with a fairly long name'),
         findsOneWidget,
       );
     });

@@ -14,7 +14,8 @@ void main() {
   test(
     'CategoryStyle turns slugs into labels and falls back to a tag icon',
     () {
-      expect(CategoryStyle.labelFor('home-decoration'), 'Home Decoration');
+      expect(CategoryStyle.labelFor('home-decoration'), 'Home decoration');
+      expect(CategoryStyle.labelFor('mens-shirts'), "Men's shirts");
       expect(CategoryStyle.labelFor('beauty'), 'Beauty');
       expect(CategoryStyle.iconFor('unknown-slug'), Icons.sell_outlined);
       expect(
