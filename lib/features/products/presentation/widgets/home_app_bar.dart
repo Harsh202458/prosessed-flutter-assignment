@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/greeting.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
@@ -20,6 +21,13 @@ class HomeSliverAppBar extends StatelessWidget {
   final ValueChanged<String> onSearchChanged;
   final ProductSort sort;
   final VoidCallback onSortPressed;
+
+  static String _greeting(AppLocalizations l10n) =>
+      switch (dayPartOf(DateTime.now())) {
+        DayPart.morning => l10n.greetingMorning,
+        DayPart.afternoon => l10n.greetingAfternoon,
+        DayPart.evening => l10n.greetingEvening,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +55,11 @@ class HomeSliverAppBar extends StatelessWidget {
         children: [
           Text(
             firstName == null
-                ? greetingFor(DateTime.now())
-                : '${greetingFor(DateTime.now())}, $firstName',
+                ? _greeting(context.l10n)
+                : context.l10n.greetingWithName(
+                    _greeting(context.l10n),
+                    firstName,
+                  ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -56,7 +67,7 @@ class HomeSliverAppBar extends StatelessWidget {
             ),
           ),
           Text(
-            'Discover something new',
+            context.l10n.homeHeadline,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: theme.textTheme.titleLarge,
@@ -111,7 +122,7 @@ class _SortButton extends StatelessWidget {
     return SizedBox.square(
       dimension: size,
       child: IconButton.filled(
-        tooltip: 'Sort products',
+        tooltip: context.l10n.sortProducts,
         style: IconButton.styleFrom(
           backgroundColor: scheme.primary,
           foregroundColor: scheme.onPrimary,

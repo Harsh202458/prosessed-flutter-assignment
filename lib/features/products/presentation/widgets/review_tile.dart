@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
@@ -54,7 +55,7 @@ class ReviewTile extends StatelessWidget {
                   crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Semantics(
-                      label: 'Rated ${review.rating} out of 5',
+                      label: context.l10n.ratedOutOf5('${review.rating}'),
                       excludeSemantics: true,
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -74,7 +75,7 @@ class ReviewTile extends StatelessWidget {
                     ),
                     if (review.date != null)
                       Text(
-                        Formatters.date(review.date!),
+                        Formatters.date(review.date!, context.l10n.localeName),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: scheme.onSurfaceVariant,
                         ),

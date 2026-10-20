@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
@@ -20,31 +21,38 @@ class _Promo {
     required this.tone,
   });
 
-  final String eyebrow;
-  final String title;
+  final String Function(AppLocalizations l10n) eyebrow;
+  final String Function(AppLocalizations l10n) title;
   final String categorySlug;
   final IconData icon;
   final _PromoTone tone;
 }
 
+String _beautyEyebrow(AppLocalizations l10n) => l10n.promoBeautyEyebrow;
+String _beautyTitle(AppLocalizations l10n) => l10n.promoBeautyTitle;
+String _phonesEyebrow(AppLocalizations l10n) => l10n.promoPhonesEyebrow;
+String _phonesTitle(AppLocalizations l10n) => l10n.promoPhonesTitle;
+String _furnitureEyebrow(AppLocalizations l10n) => l10n.promoFurnitureEyebrow;
+String _furnitureTitle(AppLocalizations l10n) => l10n.promoFurnitureTitle;
+
 const _promos = [
   _Promo(
-    eyebrow: 'Glow-up week',
-    title: 'Beauty bestsellers on sale',
+    eyebrow: _beautyEyebrow,
+    title: _beautyTitle,
     categorySlug: 'beauty',
     icon: Icons.face_retouching_natural_outlined,
     tone: _PromoTone.primary,
   ),
   _Promo(
-    eyebrow: 'Just landed',
-    title: 'The latest smartphones',
+    eyebrow: _phonesEyebrow,
+    title: _phonesTitle,
     categorySlug: 'smartphones',
     icon: Icons.smartphone_outlined,
     tone: _PromoTone.tertiary,
   ),
   _Promo(
-    eyebrow: 'Make it cosy',
-    title: 'Furniture for every room',
+    eyebrow: _furnitureEyebrow,
+    title: _furnitureTitle,
     categorySlug: 'furniture',
     icon: Icons.chair_outlined,
     tone: _PromoTone.secondary,
@@ -195,6 +203,7 @@ class _PromoBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final l10n = context.l10n;
     final (background, foreground) = switch (promo.tone) {
       _PromoTone.primary => (
         scheme.primaryContainer,
@@ -212,7 +221,7 @@ class _PromoBanner extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${promo.eyebrow}. ${promo.title}. Shop now',
+      label: l10n.promoLabel(promo.eyebrow(l10n), promo.title(l10n)),
       excludeSemantics: true,
       child: Material(
         color: background,
@@ -233,7 +242,7 @@ class _PromoBanner extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        promo.eyebrow,
+                        promo.eyebrow(l10n),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.labelMedium?.copyWith(
@@ -242,7 +251,7 @@ class _PromoBanner extends StatelessWidget {
                       ),
                       const SizedBox(height: AppSpacing.xxs),
                       Text(
-                        promo.title,
+                        promo.title(l10n),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: _PromoCarouselState.titleStyle(
@@ -261,7 +270,7 @@ class _PromoBanner extends StatelessWidget {
                             vertical: AppSpacing.xs,
                           ),
                           child: Text(
-                            'Shop now',
+                            l10n.shopNow,
                             style: theme.textTheme.labelLarge?.copyWith(
                               color: background,
                             ),

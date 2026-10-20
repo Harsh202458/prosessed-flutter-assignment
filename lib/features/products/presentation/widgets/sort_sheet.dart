@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/features/products/domain/entities/product_query.dart';
 
 extension ProductSortLabel on ProductSort {
-  String get label => switch (this) {
-    ProductSort.recommended => 'Recommended',
-    ProductSort.priceLowToHigh => 'Price: low to high',
-    ProductSort.priceHighToLow => 'Price: high to low',
-    ProductSort.rating => 'Top rated',
-    ProductSort.title => 'Name: A to Z',
+  String label(AppLocalizations l10n) => switch (this) {
+    ProductSort.recommended => l10n.sortRecommended,
+    ProductSort.priceLowToHigh => l10n.sortPriceLowHigh,
+    ProductSort.priceHighToLow => l10n.sortPriceHighLow,
+    ProductSort.rating => l10n.sortTopRated,
+    ProductSort.title => l10n.sortNameAZ,
   };
 
   IconData get icon => switch (this) {
@@ -41,12 +42,15 @@ Future<ProductSort?> showSortSheet(BuildContext context, ProductSort current) {
                   AppSpacing.xl,
                   AppSpacing.sm,
                 ),
-                child: Text('Sort by', style: theme.textTheme.titleLarge),
+                child: Text(
+                  context.l10n.sortBy,
+                  style: theme.textTheme.titleLarge,
+                ),
               ),
               for (final sort in ProductSort.values)
                 ListTile(
                   leading: Icon(sort.icon),
-                  title: Text(sort.label),
+                  title: Text(sort.label(context.l10n)),
                   selected: sort == current,
                   trailing: sort == current
                       ? const Icon(Icons.check_rounded)

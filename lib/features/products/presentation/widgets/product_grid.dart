@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/widgets/fade_slide_in.dart';
@@ -82,7 +83,7 @@ class _Footer extends StatelessWidget {
       child = Column(
         children: [
           Text(
-            state.loadMoreError!,
+            context.l10n.errorText(state.loadMoreError),
             textAlign: TextAlign.center,
             style: theme.textTheme.bodyMedium,
           ),
@@ -92,13 +93,13 @@ class _Footer extends StatelessWidget {
               const ProductListNextPageRequested(),
             ),
             icon: const Icon(Icons.refresh_rounded),
-            label: const Text('Retry'),
+            label: Text(context.l10n.retry),
           ),
         ],
       );
     } else if (state.isShowingCached) {
       child = Text(
-        "These are saved products. Pull to refresh when you're back online.",
+        context.l10n.savedProductsFooter,
         textAlign: TextAlign.center,
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
@@ -106,7 +107,7 @@ class _Footer extends StatelessWidget {
       );
     } else if (state.hasReachedEnd) {
       child = Text(
-        "You've seen all ${state.products.length} products",
+        context.l10n.seenAllProducts(state.products.length),
         style: theme.textTheme.bodySmall?.copyWith(
           color: theme.colorScheme.onSurfaceVariant,
         ),

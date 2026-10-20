@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
@@ -27,8 +28,11 @@ class PriceView extends StatelessWidget {
 
     return Semantics(
       label: product.hasDiscount
-          ? 'Price $salePrice, was ${Formatters.price(product.price)}'
-          : 'Price $salePrice',
+          ? context.l10n.priceWasLabel(
+              salePrice,
+              Formatters.price(product.price),
+            )
+          : context.l10n.priceLabel(salePrice),
       excludeSemantics: true,
       child: LayoutBuilder(
         builder: (context, constraints) {

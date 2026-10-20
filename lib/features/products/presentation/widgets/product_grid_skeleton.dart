@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/widgets/shimmer_box.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_grid_layout.dart';
@@ -22,7 +23,7 @@ class ProductGridSkeletonSliver extends StatelessWidget {
           ),
           itemCount: 8,
           itemBuilder: (_, index) => Semantics(
-            label: index == 0 ? 'Loading products' : null,
+            label: index == 0 ? context.l10n.loadingProducts : null,
             child: const AppShimmer(child: _SkeletonCard()),
           ),
         ),

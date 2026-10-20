@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
@@ -13,7 +14,7 @@ class RatingView extends StatelessWidget {
   Widget build(BuildContext context) {
     final textStyle = style ?? Theme.of(context).textTheme.bodySmall;
     return Semantics(
-      label: 'Rated ${Formatters.rating(rating)} out of 5',
+      label: context.l10n.ratedOutOf5(Formatters.rating(rating)),
       excludeSemantics: true,
       child: Row(
         mainAxisSize: MainAxisSize.min,

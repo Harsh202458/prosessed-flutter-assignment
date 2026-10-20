@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_image.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
@@ -52,8 +53,11 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
                 padding: const EdgeInsets.all(AppSpacing.xl),
                 child: ProductImage(
                   url: images[index],
-                  semanticLabel:
-                      '${widget.title}, image ${index + 1} of ${images.length}',
+                  semanticLabel: context.l10n.productImageLabel(
+                    widget.title,
+                    index + 1,
+                    images.length,
+                  ),
                 ),
               );
               return index == 0 && widget.heroEnabled

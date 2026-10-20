@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
@@ -54,8 +55,11 @@ class ProductCard extends StatelessWidget {
     return width + _padding * 2 + textBlock + AppSpacing.xxs;
   }
 
-  String get _subtitle {
-    final category = CategoryStyle.labelFor(product.category);
+  String _subtitle(BuildContext context) {
+    final category = CategoryStyle.labelFor(
+      product.category,
+      languageCode: context.l10n.localeName,
+    );
     final brand = product.brand;
     if (category.isEmpty) return brand ?? '';
     return brand == null ? category : '$category · $brand';
@@ -117,7 +121,7 @@ class ProductCard extends StatelessWidget {
                       bottom: AppSpacing.sm,
                       left: AppSpacing.sm,
                       child: _Tag(
-                        label: 'Out of stock',
+                        label: context.l10n.outOfStock,
                         background: scheme.inverseSurface,
                         foreground: scheme.onInverseSurface,
                       ),
@@ -134,7 +138,7 @@ class ProductCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          _subtitle,
+                          _subtitle(context),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.labelSmall?.copyWith(

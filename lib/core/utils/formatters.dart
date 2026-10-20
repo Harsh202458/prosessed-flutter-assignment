@@ -16,8 +16,7 @@ abstract final class Formatters {
   /// `4.567` → `4.6`
   static String rating(num value) => value.toStringAsFixed(1);
 
-  static final DateFormat _date = DateFormat.yMMMd('en_US');
-
-  /// `2025-04-30` → `Apr 30, 2025`
-  static String date(DateTime value) => _date.format(value);
+  /// `2025-04-30` → `Apr 30, 2025` (or `30 अप्रैल 2025` for `hi`).
+  static String date(DateTime value, [String locale = 'en_US']) =>
+      DateFormat.yMMMd(locale).format(value);
 }

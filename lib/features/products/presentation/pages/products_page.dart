@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/network/connectivity_cubit.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
@@ -136,8 +137,10 @@ class _ProductsPageState extends State<ProductsPage> {
           listenWhen: (previous, current) =>
               current.refreshError != null &&
               previous.refreshError != current.refreshError,
-          listener: (context, state) =>
-              showAppSnackBar(context, state.refreshError!),
+          listener: (context, state) => showAppSnackBar(
+            context,
+            context.l10n.errorText(state.refreshError),
+          ),
         ),
         BlocListener<ProductListBloc, ProductListState>(
           listenWhen: (previous, current) =>
@@ -212,12 +215,10 @@ class _ProductsPageState extends State<ProductsPage> {
         Expanded(
           flex: 4,
           child: selected == null
-              ? const EmptyView(
+              ? EmptyView(
                   icon: Icons.touch_app_outlined,
-                  title: 'Select a product',
-                  message:
-                      'Pick any product to see its photos, details and '
-                      'reviews here.',
+                  title: context.l10n.selectProductTitle,
+                  message: context.l10n.selectProductMessage,
                 )
               : KeyedSubtree(
                   key: ValueKey(selected.id),
@@ -238,8 +239,8 @@ class _ProductsPageState extends State<ProductsPage> {
       SliverFillRemaining(
         hasScrollBody: false,
         child: ErrorView(
-          title: "Couldn't load products",
-          message: state.errorMessage ?? '',
+          title: context.l10n.productsLoadError,
+          message: context.l10n.errorText(state.errorMessage),
           onRetry: () => _bloc.add(const ProductListStarted()),
         ),
       ),
@@ -273,10 +274,13 @@ class _SectionTitle extends StatelessWidget {
     final theme = Theme.of(context);
     final query = state.query;
     final title = query.isSearching
-        ? 'Results for "${query.search}"'
+        ? context.l10n.resultsFor(query.search)
         : query.categorySlug != null
-        ? CategoryStyle.labelFor(query.categorySlug!)
-        : 'All products';
+        ? CategoryStyle.labelFor(
+            query.categorySlug!,
+            languageCode: context.l10n.localeName,
+          )
+        : context.l10n.allProducts;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -297,7 +301,7 @@ class _SectionTitle extends StatelessWidget {
           ),
           if (query.sort != ProductSort.recommended)
             Text(
-              query.sort.label,
+              query.sort.label(context.l10n),
               style: theme.textTheme.labelMedium?.copyWith(
                 color: theme.colorScheme.primary,
               ),
@@ -318,15 +322,15 @@ class _EmptyResults extends StatelessWidget {
   Widget build(BuildContext context) {
     return EmptyView(
       icon: Icons.search_off_rounded,
-      title: 'No products found',
+      title: context.l10n.noProductsTitle,
       message: query.isSearching
-          ? 'Nothing matches "${query.search}". Try a different search.'
-          : 'There are no products here yet.',
+          ? context.l10n.noSearchResults(query.search)
+          : context.l10n.noProductsInCategory,
       action: query.isFiltered
           ? OutlinedButton.icon(
               onPressed: onClearFilters,
               icon: const Icon(Icons.filter_alt_off_outlined),
-              label: const Text('Clear filters'),
+              label: Text(context.l10n.clearFilters),
             )
           : null,
     );

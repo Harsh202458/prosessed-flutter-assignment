@@ -29,10 +29,46 @@ abstract final class CategoryStyle {
     'womens-watches': Icons.watch_outlined,
   };
 
+  /// Hindi names. Product data itself stays in English, as the API returns.
+  static const Map<String, String> _hindi = {
+    'beauty': 'सौंदर्य',
+    'fragrances': 'सुगंध',
+    'furniture': 'फ़र्नीचर',
+    'groceries': 'किराना',
+    'home-decoration': 'घर की सजावट',
+    'kitchen-accessories': 'रसोई का सामान',
+    'laptops': 'लैपटॉप',
+    'mens-shirts': 'पुरुषों की शर्ट',
+    'mens-shoes': 'पुरुषों के जूते',
+    'mens-watches': 'पुरुषों की घड़ियाँ',
+    'mobile-accessories': 'मोबाइल एक्सेसरीज़',
+    'motorcycle': 'मोटरसाइकिल',
+    'skin-care': 'त्वचा की देखभाल',
+    'smartphones': 'स्मार्टफ़ोन',
+    'sports-accessories': 'खेल का सामान',
+    'sunglasses': 'धूप के चश्मे',
+    'tablets': 'टैबलेट',
+    'tops': 'टॉप्स',
+    'vehicle': 'वाहन',
+    'womens-bags': 'महिलाओं के बैग',
+    'womens-dresses': 'महिलाओं की ड्रेस',
+    'womens-jewellery': 'महिलाओं के गहने',
+    'womens-shoes': 'महिलाओं के जूते',
+    'womens-watches': 'महिलाओं की घड़ियाँ',
+  };
+
   static IconData iconFor(String slug) => _icons[slug] ?? Icons.sell_outlined;
 
-  /// `home-decoration` → `Home Decoration`
-  static String labelFor(String slug) => slug
+  /// `home-decoration` → `Home Decoration` (or its Hindi name for `hi`).
+  static String labelFor(String slug, {String languageCode = 'en'}) {
+    if (languageCode == 'hi') {
+      final hindi = _hindi[slug];
+      if (hindi != null) return hindi;
+    }
+    return _titleCase(slug);
+  }
+
+  static String _titleCase(String slug) => slug
       .split('-')
       .where((word) => word.isNotEmpty)
       .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 
 /// Search input. The bloc debounces [onChanged], so it can fire per key.
 class ProductSearchField extends StatelessWidget {
@@ -18,14 +19,14 @@ class ProductSearchField extends StatelessWidget {
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: 'Search products',
+        hintText: context.l10n.searchHint,
         prefixIcon: const Icon(Icons.search_rounded),
         suffixIcon: ValueListenableBuilder<TextEditingValue>(
           valueListenable: controller,
           builder: (context, value, _) => value.text.isEmpty
               ? const SizedBox.shrink()
               : IconButton(
-                  tooltip: 'Clear search',
+                  tooltip: context.l10n.clearSearch,
                   icon: const Icon(Icons.close_rounded),
                   onPressed: () {
                     controller.clear();

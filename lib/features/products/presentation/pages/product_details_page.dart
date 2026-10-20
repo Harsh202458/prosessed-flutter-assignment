@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
@@ -50,8 +51,8 @@ class ProductDetailsPage extends StatelessWidget {
     context.read<ProductDetailsCubit>().resetQuantity();
     showAppSnackBar(
       context,
-      'Added $quantity × ${product.title} to your cart',
-      actionLabel: 'View cart',
+      context.l10n.addedToCart(quantity, product.title),
+      actionLabel: context.l10n.viewCart,
       onAction: () => context.go(AppRoutes.cart),
     );
   }
@@ -72,12 +73,12 @@ class ProductDetailsPage extends StatelessWidget {
             appBar: _embedded
                 ? AppBar(
                     automaticallyImplyLeading: false,
-                    title: const Text('Product details'),
+                    title: Text(context.l10n.productDetails),
                     actions: [
                       if (state.product ?? preview case final product?)
                         WishlistButton(product: product),
                       IconButton(
-                        tooltip: 'Close details',
+                        tooltip: context.l10n.closeDetails,
                         onPressed: onClose,
                         icon: const Icon(Icons.close_rounded),
                       ),
@@ -103,10 +104,11 @@ class ProductDetailsPage extends StatelessWidget {
               ),
               ProductDetailsStatus.notFound => ErrorView(
                 icon: Icons.search_off_rounded,
-                title: 'Product not found',
-                message:
-                    "This product doesn't exist or is no longer available.",
-                actionLabel: _embedded ? 'Close' : 'Back to shop',
+                title: context.l10n.productNotFoundTitle,
+                message: context.l10n.productNotFoundMessage,
+                actionLabel: _embedded
+                    ? context.l10n.close
+                    : context.l10n.backToShop,
                 onRetry:
                     onClose ??
                     () => context.canPop()
@@ -114,8 +116,8 @@ class ProductDetailsPage extends StatelessWidget {
                         : context.go(AppRoutes.products),
               ),
               ProductDetailsStatus.failure => ErrorView(
-                title: "Couldn't load this product",
-                message: state.errorMessage ?? '',
+                title: context.l10n.productLoadError,
+                message: context.l10n.errorText(state.errorMessage),
                 onRetry: () => cubit.load(productId),
               ),
             },
@@ -234,7 +236,11 @@ class _ProductInfo extends StatelessWidget {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final subtitle = [
-      if (product.category.isNotEmpty) CategoryStyle.labelFor(product.category),
+      if (product.category.isNotEmpty)
+        CategoryStyle.labelFor(
+          product.category,
+          languageCode: context.l10n.localeName,
+        ),
       if (product.brand != null) product.brand!,
     ].join(' · ');
 
@@ -262,8 +268,7 @@ class _ProductInfo extends StatelessWidget {
               if (!isLoading) ...[
                 const SizedBox(width: AppSpacing.sm),
                 Text(
-                  '${product.reviews.length} '
-                  '${product.reviews.length == 1 ? 'review' : 'reviews'}',
+                  context.l10n.reviewCount(product.reviews.length),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: scheme.onSurfaceVariant,
                   ),
@@ -302,7 +307,9 @@ class _ProductInfo extends StatelessWidget {
                       vertical: AppSpacing.xxs,
                     ),
                     child: Text(
-                      'Save ${product.discountPercentage.round()}%',
+                      context.l10n.saveDiscount(
+                        product.discountPercentage.round(),
+                      ),
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: scheme.onPrimaryContainer,
                       ),
@@ -329,11 +336,11 @@ class _ProductInfo extends StatelessWidget {
               ),
             )
           else ...[
-            Text('Description', style: theme.textTheme.titleMedium),
+            Text(context.l10n.description, style: theme.textTheme.titleMedium),
             const SizedBox(height: AppSpacing.sm),
             Text(
               product.description.isEmpty
-                  ? 'No description available.'
+                  ? context.l10n.noDescription
                   : product.description,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: scheme.onSurfaceVariant,
@@ -342,13 +349,13 @@ class _ProductInfo extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.xl),
             Text(
-              'Customer reviews',
+              context.l10n.customerReviews,
               style: theme.textTheme.titleMedium,
             ),
             const SizedBox(height: AppSpacing.md),
             if (product.reviews.isEmpty)
               Text(
-                'No reviews yet.',
+                context.l10n.noReviews,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: scheme.onSurfaceVariant,
                 ),
@@ -371,7 +378,7 @@ class _DetailsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Loading product',
+      label: context.l10n.loadingProduct,
       child: AppShimmer(
         child: ListView(
           physics: const NeverScrollableScrollPhysics(),

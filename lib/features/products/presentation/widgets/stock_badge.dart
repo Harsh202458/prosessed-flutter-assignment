@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 
 /// "In stock", "Only N left" or "Out of stock", colour-coded.
@@ -17,19 +18,19 @@ class StockBadge extends StatelessWidget {
 
     final (label, icon, background, foreground) = switch (stock) {
       <= 0 => (
-        'Out of stock',
+        context.l10n.outOfStock,
         Icons.block_rounded,
         scheme.errorContainer,
         scheme.onErrorContainer,
       ),
       < lowStockThreshold => (
-        'Only $stock left',
+        context.l10n.stockOnlyLeft(stock),
         Icons.hourglass_bottom_rounded,
         scheme.tertiaryContainer,
         scheme.onTertiaryContainer,
       ),
       _ => (
-        'In stock · $stock available',
+        context.l10n.stockInStock(stock),
         Icons.check_circle_outline_rounded,
         dark ? const Color(0xFF1C3B28) : const Color(0xFFDDF4E4),
         dark ? const Color(0xFF9BE2B4) : const Color(0xFF14592F),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/core/widgets/quantity_selector.dart';
@@ -24,20 +25,21 @@ class AddToCartBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.l10n;
     final product = state.product!;
     final total = product.discountedPrice * state.quantity;
 
     final (String label, IconData icon) = switch (state) {
       _ when !product.isInStock => (
-        'Out of stock',
+        l10n.outOfStock,
         Icons.remove_shopping_cart_outlined,
       ),
       _ when !state.canAdd => (
-        'All in your cart',
+        l10n.allInCart,
         Icons.shopping_cart_checkout_rounded,
       ),
       _ => (
-        'Add · ${Formatters.price(total)}',
+        l10n.addWithTotal(Formatters.price(total)),
         Icons.add_shopping_cart_rounded,
       ),
     };
@@ -60,9 +62,8 @@ class AddToCartBar extends StatelessWidget {
               if (state.inCart > 0) ...[
                 Text(
                   state.canAdd
-                      ? '${state.inCart} in your cart · '
-                            '${state.available} more available'
-                      : 'You have all ${product.stock} in your cart',
+                      ? l10n.inCartMoreAvailable(state.inCart, state.available)
+                      : l10n.allStockInCart(product.stock),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

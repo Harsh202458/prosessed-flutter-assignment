@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/widgets/shimmer_box.dart';
@@ -30,16 +31,21 @@ class CategoryChips extends StatelessWidget {
           CategoriesStatus.failure => _list([
             ActionChip(
               avatar: const Icon(Icons.refresh_rounded, size: 18),
-              label: const Text("Couldn't load categories · Retry"),
+              label: Text(context.l10n.categoriesError),
               onPressed: context.read<CategoriesCubit>().load,
             ),
           ]),
           CategoriesStatus.success => _list([
-            _chip(context, 'All', null, Icons.grid_view_rounded),
+            _chip(
+              context,
+              context.l10n.categoryAll,
+              null,
+              Icons.grid_view_rounded,
+            ),
             for (final c in state.categories)
               _chip(
                 context,
-                c.name,
+                _categoryName(context, c.name, c.slug),
                 c.slug,
                 CategoryStyle.iconFor(c.slug),
                 imageUrl: c.imageUrl,
@@ -99,6 +105,14 @@ class CategoryChips extends StatelessWidget {
       selected: selected,
       onSelected: (_) => onSelected(slug),
     );
+  }
+
+  /// The API's English name, or the Hindi one when the app is in Hindi.
+  static String _categoryName(BuildContext context, String name, String slug) {
+    final code = context.l10n.localeName;
+    return code == 'hi'
+        ? CategoryStyle.labelFor(slug, languageCode: code)
+        : name;
   }
 
   Widget _list(List<Widget> chips) => ListView.separated(
