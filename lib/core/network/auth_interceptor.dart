@@ -70,6 +70,8 @@ class AuthInterceptor extends QueuedInterceptor {
     try {
       handler.resolve(await _refreshDio.fetch<dynamic>(request));
     } on DioException catch (retryError) {
+      // A fresh token that is still rejected means the session is gone.
+      if (retryError.response?.statusCode == 401) await _expireSession();
       handler.next(retryError);
     }
   }
