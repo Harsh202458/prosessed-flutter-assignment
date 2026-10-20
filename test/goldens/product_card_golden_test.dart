@@ -11,12 +11,12 @@ import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/widgets/product_card.dart';
 import 'package:shopsphere/l10n/app_localizations.dart';
 
-/// Loads the bundled Plus Jakarta Sans so goldens show real text instead of
+/// Loads the bundled Poppins so goldens show real text instead of
 /// the test font's placeholder boxes.
 Future<void> _loadAppFont() async {
   final loader = FontLoader(AppTheme.fontFamily);
-  for (final weight in [400, 500, 600, 700, 800]) {
-    loader.addFont(rootBundle.load('assets/fonts/PlusJakartaSans-$weight.ttf'));
+  for (final weight in [400, 500, 600, 700]) {
+    loader.addFont(rootBundle.load('assets/fonts/Poppins-$weight.ttf'));
   }
   await loader.load();
 }

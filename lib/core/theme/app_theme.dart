@@ -4,7 +4,7 @@ import 'package:shopsphere/core/theme/app_spacing.dart';
 
 /// Centralised Material 3 [ThemeData] for light and dark modes.
 abstract final class AppTheme {
-  static const String fontFamily = 'PlusJakartaSans';
+  static const String fontFamily = 'Poppins';
 
   static ThemeData get light => _build(Brightness.light);
   static ThemeData get dark => _build(Brightness.dark);
@@ -181,60 +181,57 @@ abstract final class AppTheme {
     );
   }
 
-  /// Plus Jakarta Sans with heavier display weights. Material's default
-  /// letter spacing is tuned for Roboto and makes this wider typeface look
-  /// stretched, so tracking is tightened across the scale.
+  /// One type scale for the whole app, tuned for Poppins.
+  ///
+  /// Poppins has a large x-height, so sizes sit a step below Material's
+  /// Roboto defaults and only four weights are used: 400 for reading text,
+  /// 500 for labels, 600 for titles and 700 for headlines. Line heights are
+  /// set explicitly because Poppins' built-in line spacing is tall.
   static TextTheme _textTheme(TextTheme base) {
     TextStyle? style(
-      TextStyle? s, {
-      required double letterSpacing,
-      FontWeight? weight,
-    }) => s?.copyWith(fontWeight: weight, letterSpacing: letterSpacing);
+      TextStyle? s,
+      double size,
+      double height,
+      FontWeight weight, {
+      double letterSpacing = 0,
+    }) => s?.copyWith(
+      fontSize: size,
+      height: height / size,
+      fontWeight: weight,
+      letterSpacing: letterSpacing,
+    );
+    const regular = FontWeight.w400;
+    const medium = FontWeight.w500;
+    const semiBold = FontWeight.w600;
+    const bold = FontWeight.w700;
     return base.copyWith(
-      displaySmall: style(
-        base.displaySmall,
-        weight: FontWeight.w800,
+      displayLarge: style(base.displayLarge, 48, 56, bold, letterSpacing: -1),
+      displayMedium: style(base.displayMedium, 40, 48, bold, letterSpacing: -1),
+      displaySmall: style(base.displaySmall, 32, 40, bold, letterSpacing: -0.5),
+      headlineLarge: style(
+        base.headlineLarge,
+        28,
+        36,
+        bold,
         letterSpacing: -0.5,
       ),
       headlineMedium: style(
         base.headlineMedium,
-        weight: FontWeight.w800,
-        letterSpacing: -0.5,
-      ),
-      headlineSmall: style(
-        base.headlineSmall,
-        weight: FontWeight.w800,
-        letterSpacing: -0.4,
-      ),
-      titleLarge: style(
-        base.titleLarge,
-        weight: FontWeight.w700,
+        24,
+        32,
+        bold,
         letterSpacing: -0.3,
       ),
-      titleMedium: style(
-        base.titleMedium,
-        weight: FontWeight.w700,
-        letterSpacing: -0.1,
-      ),
-      titleSmall: style(
-        base.titleSmall,
-        weight: FontWeight.w600,
-        letterSpacing: -0.1,
-      ),
-      bodyLarge: style(base.bodyLarge, letterSpacing: 0),
-      bodyMedium: style(base.bodyMedium, letterSpacing: 0),
-      bodySmall: style(base.bodySmall, letterSpacing: 0.1),
-      labelLarge: style(
-        base.labelLarge,
-        weight: FontWeight.w600,
-        letterSpacing: 0,
-      ),
-      labelMedium: style(
-        base.labelMedium,
-        weight: FontWeight.w600,
-        letterSpacing: 0.1,
-      ),
-      labelSmall: style(base.labelSmall, letterSpacing: 0.2),
+      headlineSmall: style(base.headlineSmall, 20, 28, semiBold),
+      titleLarge: style(base.titleLarge, 18, 26, semiBold),
+      titleMedium: style(base.titleMedium, 15, 22, semiBold),
+      titleSmall: style(base.titleSmall, 14, 20, medium),
+      bodyLarge: style(base.bodyLarge, 15, 22, regular),
+      bodyMedium: style(base.bodyMedium, 14, 20, regular),
+      bodySmall: style(base.bodySmall, 12, 18, regular),
+      labelLarge: style(base.labelLarge, 14, 20, medium),
+      labelMedium: style(base.labelMedium, 12, 16, medium),
+      labelSmall: style(base.labelSmall, 11, 16, medium, letterSpacing: 0.2),
     );
   }
 }

@@ -96,7 +96,7 @@ phones to tablets in landscape.
 | Secure storage | `flutter_secure_storage` | Tokens in the Android Keystore / iOS Keychain |
 | Local storage | `hive_ce`, `hive_ce_flutter` | Cart, product cache and settings; fast and dependency-light (maintained fork of Hive) |
 | Images | `cached_network_image`, `shimmer` | Cached photos with placeholders and skeletons |
-| UI | `smooth_page_indicator`, Plus Jakarta Sans (bundled, OFL) | Carousel dots; a distinctive typeface without runtime font downloads |
+| UI | `smooth_page_indicator`, Poppins (bundled, OFL) | Carousel dots; one typeface that covers both Latin and Devanagari, so English and Hindi look the same, with no runtime font downloads |
 | Connectivity | `connectivity_plus` | Offline banner and automatic refresh |
 | Localization | `flutter_localizations`, `intl`, `gen-l10n` (ARB files) | Type-safe generated strings; English and Hindi |
 | Testing | `flutter_test`, `bloc_test`, `mocktail` | State-sequence tests and mocks without code generation |
@@ -293,4 +293,4 @@ any part of the code.
 - **GitHub:** [Harsh202458](https://github.com/Harsh202458)
 - **Name:** Harsh
 
-Fonts: Plus Jakarta Sans © The Plus Jakarta Sans Project Authors, SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).
+Fonts: Poppins © The Poppins Project Authors, SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).

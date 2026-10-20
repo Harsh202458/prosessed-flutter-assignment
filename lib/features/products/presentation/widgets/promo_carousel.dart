@@ -124,10 +124,10 @@ class _PromoCarouselState extends State<PromoCarousel> {
     );
   }
 
-  /// Promo headline: between titleMedium and titleLarge so two lines fit
-  /// without the banner dominating the screen.
+  /// Promo headline: titleLarge with a slightly tighter line height so two
+  /// lines fit without the banner dominating the screen.
   static TextStyle? titleStyle(TextTheme text) =>
-      text.titleMedium?.copyWith(fontSize: 18, height: 1.25);
+      text.titleLarge?.copyWith(height: 1.3);
 
   static double _height(BuildContext context) {
     final text = Theme.of(context).textTheme;
