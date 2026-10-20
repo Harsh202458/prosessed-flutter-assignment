@@ -17,9 +17,7 @@ class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource _remote;
   final TokenStorage _tokenStorage;
 
-  static const invalidCredentials = BadRequestFailure(
-    'Invalid username or password.',
-  );
+  static const invalidCredentials = InvalidCredentialsFailure();
 
   @override
   Future<Result<User>> login({

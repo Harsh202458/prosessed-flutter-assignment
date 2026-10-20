@@ -34,6 +34,13 @@ final class BadRequestFailure extends Failure {
   ]);
 }
 
+/// HTTP 400 from `/auth/login`.
+final class InvalidCredentialsFailure extends Failure {
+  const InvalidCredentialsFailure([
+    super.message = 'Invalid username or password.',
+  ]);
+}
+
 final class UnauthorizedFailure extends Failure {
   const UnauthorizedFailure([
     super.message = 'Your session has expired. Please log in again.',
