@@ -151,7 +151,7 @@ lib/
     auth/      data · domain · presentation
     products/  data · domain · presentation
     cart/      data · domain · presentation
-    profile/   presentation   (reuses the auth domain's GetCurrentUser)
+    profile/   data · domain · presentation   (reads /auth/me through the auth data source)
     wishlist/  data · domain · presentation
 test/
   fixtures/                # real DummyJSON responses
@@ -246,9 +246,9 @@ flutter build apk --release
 flutter test --coverage
 ```
 
-- **141 tests**, all passing: repositories (success, server-failure and network-failure paths), use cases, every Bloc/Cubit state sequence (`bloc_test`), JSON parsing with real fixtures, widget tests (validation, not-found, out-of-stock, cart totals, profile, wishlist, Hindi login screen, overflow at 1.3× text, tablet master–detail), translation key parity, and two golden tests.
+- **158 tests**, all passing (156 in CI, which skips the two goldens): repositories (success, server-failure and network-failure paths), use cases (login, get/search products, product details, cart totals, place order), the auth interceptor (Bearer header, refresh and retry, sign-out on a rejected refresh), every Bloc/Cubit state sequence (`bloc_test`), JSON parsing with real fixtures, widget tests (validation, not-found, out-of-stock, cart totals, profile, wishlist, Hindi login screen, overflow at 1.3× text, tablet master–detail), translation key parity, and two golden tests.
 - **Golden tests** live in `test/goldens/` and are tagged `golden`. Font rendering differs slightly between operating systems, so CI skips them (`--exclude-tags golden`); run them locally with `flutter test --tags golden`, and refresh them with `flutter test --tags golden --update-goldens`.
-- **Line coverage: 75.6%** of hand-written code (generated `*.g.dart` / `*.freezed.dart` / localization files excluded; `coverage/lcov.info`).
+- **Line coverage: 77.2%** of hand-written code (generated `*.g.dart` / `*.freezed.dart` / localization files excluded; `coverage/lcov.info`).
 - CI runs format check, analyze and tests on every push (`.github/workflows/ci.yml`).
 
 ---
@@ -290,7 +290,10 @@ any part of the code.
 
 ## 12. Author
 
-- **GitHub:** [Harsh202458](https://github.com/Harsh202458)
 - **Name:** Harsh
+- **GitHub:** [Harsh202458](https://github.com/Harsh202458)
+- **Email:** _add before submission_
+- **LinkedIn:** _add before submission_
+- **Portfolio:** _add before submission_
 
 Fonts: Poppins © The Poppins Project Authors, SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).
