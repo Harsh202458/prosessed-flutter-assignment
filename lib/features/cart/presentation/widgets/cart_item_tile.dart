@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/core/widgets/quantity_selector.dart';
@@ -77,7 +78,7 @@ class CartItemTile extends StatelessWidget {
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Remove ${item.title}',
+                          tooltip: context.l10n.removeItem(item.title),
                           visualDensity: VisualDensity.compact,
                           onPressed: onRemove,
                           icon: const Icon(Icons.delete_outline_rounded),
@@ -85,7 +86,9 @@ class CartItemTile extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '${Formatters.price(item.unitPrice)} each',
+                      context.l10n.unitPriceEach(
+                        Formatters.price(item.unitPrice),
+                      ),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: scheme.onSurfaceVariant,
                       ),

@@ -24,8 +24,9 @@ class CartCubit extends Cubit<CartState> {
   final PlaceOrder _placeOrder;
   final CalculateCartTotals _calculateTotals;
 
-  static const String _loadError = "We couldn't restore your saved cart.";
-  static const String _saveError =
+  /// Identify which storage problem happened; the UI shows translated text.
+  static const String loadErrorMessage = "We couldn't restore your saved cart.";
+  static const String saveErrorMessage =
       "Your cart couldn't be saved on this device.";
 
   Future<void> load() async {
@@ -35,7 +36,10 @@ class CartCubit extends Cubit<CartState> {
         emit(_withItems(data).copyWith(status: CartStatus.ready));
       case Err():
         emit(
-          state.copyWith(status: CartStatus.ready, storageError: _loadError),
+          state.copyWith(
+            status: CartStatus.ready,
+            storageError: loadErrorMessage,
+          ),
         );
     }
   }
@@ -142,6 +146,6 @@ class CartCubit extends Cubit<CartState> {
   Future<void> _update(List<CartItem> items) async {
     emit(_withItems(items));
     final saved = await _repository.saveCart(items);
-    if (saved is Err) emit(state.copyWith(storageError: _saveError));
+    if (saved is Err) emit(state.copyWith(storageError: saveErrorMessage));
   }
 }

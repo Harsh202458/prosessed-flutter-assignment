@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
 import 'package:shopsphere/core/widgets/app_button.dart';
@@ -37,13 +38,13 @@ class CartSummary extends StatelessWidget {
           ),
         ],
         _Row(
-          label: 'Total',
+          label: context.l10n.total,
           value: Formatters.price(totals.total),
           style: theme.textTheme.titleLarge,
         ),
         SizedBox(height: showBreakdown ? AppSpacing.lg : AppSpacing.md),
         AppButton(
-          label: 'Place order',
+          label: context.l10n.placeOrder,
           icon: Icons.lock_outline_rounded,
           isLoading: isPlacingOrder,
           onPressed: onPlaceOrder,
@@ -69,24 +70,22 @@ class CartBreakdown extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _Row(
-          label:
-              'Subtotal (${totals.itemCount} '
-              '${totals.itemCount == 1 ? 'item' : 'items'})',
+          label: context.l10n.subtotalItems(totals.itemCount),
           value: Formatters.price(totals.subtotal),
         ),
         if (totals.discount > 0.005) ...[
           const SizedBox(height: AppSpacing.sm),
           _Row(
-            label: 'Discount',
+            label: context.l10n.discount,
             value: '−${Formatters.price(totals.discount)}',
             valueColor: scheme.primary,
           ),
         ],
         const SizedBox(height: AppSpacing.sm),
-        const _Row(label: 'Delivery', value: 'Free'),
+        _Row(label: context.l10n.delivery, value: context.l10n.free),
         const SizedBox(height: AppSpacing.md),
         Text(
-          'Orders are simulated by DummyJSON. No payment is taken.',
+          context.l10n.simulatedOrderNote,
           style: theme.textTheme.bodySmall?.copyWith(
             color: scheme.onSurfaceVariant,
           ),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
@@ -22,8 +23,8 @@ class CartPage extends StatelessWidget {
     unawaited(cubit.remove(item.productId));
     showAppSnackBar(
       context,
-      'Removed ${item.title}',
-      actionLabel: 'Undo',
+      context.l10n.removedItem(item.title),
+      actionLabel: context.l10n.undo,
       onAction: () => unawaited(cubit.restore(item, index)),
     );
   }
@@ -33,16 +34,16 @@ class CartPage extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear your cart?'),
-        content: const Text('This removes every item from your cart.'),
+        title: Text(context.l10n.clearCartTitle),
+        content: Text(context.l10n.clearCartMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(context.l10n.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Clear cart'),
+            child: Text(context.l10n.clearCart),
           ),
         ],
       ),
@@ -69,25 +70,32 @@ class CartPage extends StatelessWidget {
         } else if (state.checkoutStatus == CheckoutStatus.failure) {
           showAppSnackBar(
             context,
-            "Couldn't place your order. ${state.checkoutError ?? ''}",
-            actionLabel: 'Retry',
+            context.l10n.orderFailed(
+              context.l10n.errorText(state.checkoutError),
+            ),
+            actionLabel: context.l10n.retry,
             onAction: () => unawaited(cubit.placeOrder()),
           );
         } else if (state.storageError != null) {
-          showAppSnackBar(context, state.storageError!);
+          showAppSnackBar(
+            context,
+            state.storageError == CartCubit.loadErrorMessage
+                ? context.l10n.errorCartRestore
+                : context.l10n.errorCartSave,
+          );
         }
       },
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Cart'),
+            title: Text(context.l10n.cartTitle),
             actions: [
               if (!state.isEmpty)
                 TextButton(
                   onPressed: state.isPlacingOrder
                       ? null
                       : () => unawaited(_confirmClear(context)),
-                  child: const Text('Clear'),
+                  child: Text(context.l10n.clear),
                 ),
               const SizedBox(width: AppSpacing.sm),
             ],
@@ -98,12 +106,12 @@ class CartPage extends StatelessWidget {
             ),
             CartState(isEmpty: true) => EmptyView(
               icon: Icons.shopping_bag_outlined,
-              title: 'Your cart is empty',
-              message: 'Browse the shop and add something you love.',
+              title: context.l10n.cartEmptyTitle,
+              message: context.l10n.cartEmptyMessage,
               action: FilledButton.icon(
                 onPressed: () => context.go(AppRoutes.products),
                 icon: const Icon(Icons.storefront_outlined),
-                label: const Text('Start shopping'),
+                label: Text(context.l10n.startShopping),
               ),
             ),
             _ => _CartContent(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 import 'package:shopsphere/core/utils/formatters.dart';
@@ -28,14 +29,13 @@ class OrderConfirmationPage extends StatelessWidget {
                   const _SuccessMark(),
                   const SizedBox(height: AppSpacing.xl),
                   Text(
-                    'Order placed',
+                    context.l10n.orderPlaced,
                     style: theme.textTheme.headlineMedium,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Text(
-                    "Thanks for shopping with ShopSphere. We'll get it "
-                    'packed and on its way.',
+                    context.l10n.orderThanks,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       color: scheme.onSurfaceVariant,
                     ),
@@ -48,17 +48,17 @@ class OrderConfirmationPage extends StatelessWidget {
                       child: Column(
                         children: [
                           _Detail(
-                            label: 'Order number',
+                            label: context.l10n.orderNumber,
                             value: '#${order.orderId}',
                           ),
                           const SizedBox(height: AppSpacing.sm),
                           _Detail(
-                            label: 'Items',
+                            label: context.l10n.items,
                             value: '${order.itemCount}',
                           ),
                           const SizedBox(height: AppSpacing.sm),
                           _Detail(
-                            label: 'Total',
+                            label: context.l10n.total,
                             value: Formatters.price(order.total),
                           ),
                         ],
@@ -71,7 +71,7 @@ class OrderConfirmationPage extends StatelessWidget {
                     child: FilledButton.icon(
                       onPressed: () => context.go(AppRoutes.products),
                       icon: const Icon(Icons.storefront_outlined),
-                      label: const Text('Continue shopping'),
+                      label: Text(context.l10n.continueShopping),
                     ),
                   ),
                 ],
@@ -92,7 +92,7 @@ class _SuccessMark extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final mark = Semantics(
-      label: 'Order confirmed',
+      label: context.l10n.orderConfirmed,
       child: CircleAvatar(
         radius: 48,
         backgroundColor: scheme.primaryContainer,
