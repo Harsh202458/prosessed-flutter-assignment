@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
+import 'package:shopsphere/core/l10n/locale_cubit.dart';
 import 'package:shopsphere/core/network/connectivity_cubit.dart';
 import 'package:shopsphere/core/theme/app_theme.dart';
 import 'package:shopsphere/core/theme/theme_cubit.dart';
@@ -20,6 +22,7 @@ class ShopSphereApp extends StatelessWidget {
     required this.themeCubit,
     required this.connectivityCubit,
     required this.wishlistCubit,
+    required this.localeCubit,
     super.key,
   });
 
@@ -30,6 +33,7 @@ class ShopSphereApp extends StatelessWidget {
   final ThemeCubit themeCubit;
   final ConnectivityCubit connectivityCubit;
   final WishlistCubit wishlistCubit;
+  final LocaleCubit localeCubit;
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +45,7 @@ class ShopSphereApp extends StatelessWidget {
         BlocProvider.value(value: themeCubit),
         BlocProvider.value(value: connectivityCubit),
         BlocProvider.value(value: wishlistCubit),
+        BlocProvider.value(value: localeCubit),
       ],
       child: SessionEffects(
         onSignedIn: () => unawaited(profileCubit.load()),
@@ -51,15 +56,22 @@ class ShopSphereApp extends StatelessWidget {
           unawaited(cartCubit.clear());
           unawaited(wishlistCubit.clear());
         },
-        child: BlocBuilder<ThemeCubit, ThemeMode>(
-          builder: (context, themeMode) => MaterialApp.router(
-            title: 'ShopSphere',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            darkTheme: AppTheme.dark,
-            themeMode: themeMode,
-            routerConfig: router,
-          ),
+        child: Builder(
+          builder: (context) {
+            final themeMode = context.watch<ThemeCubit>().state;
+            final locale = context.watch<LocaleCubit>().state;
+            return MaterialApp.router(
+              onGenerateTitle: (context) => context.l10n.appName,
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.light,
+              darkTheme: AppTheme.dark,
+              themeMode: themeMode,
+              locale: locale,
+              supportedLocales: AppLocalizations.supportedLocales,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              routerConfig: router,
+            );
+          },
         ),
       ),
     );

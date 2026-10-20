@@ -3,6 +3,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive_ce_flutter/hive_ce_flutter.dart';
+import 'package:shopsphere/core/l10n/locale_cubit.dart';
 import 'package:shopsphere/core/network/auth_interceptor.dart';
 import 'package:shopsphere/core/network/connectivity_cubit.dart';
 import 'package:shopsphere/core/network/connectivity_service.dart';
@@ -68,6 +69,7 @@ void _registerCore(Box<String> settingsBox) {
   sl
     ..registerLazySingleton(() => SettingsStorage(settingsBox))
     ..registerLazySingleton(() => ThemeCubit(sl()))
+    ..registerLazySingleton(() => LocaleCubit(sl()))
     ..registerLazySingleton<ConnectivityService>(ConnectivityPlusService.new)
     ..registerLazySingleton(() => ConnectivityCubit(sl()))
     ..registerLazySingleton<FlutterSecureStorage>(

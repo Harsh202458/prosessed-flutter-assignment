@@ -7,6 +7,7 @@ class SettingsStorage {
 
   static const String boxName = 'settings';
   static const String _themeModeKey = 'theme_mode';
+  static const String _languageKey = 'language';
 
   final Box<String> _box;
 
@@ -20,4 +21,10 @@ class SettingsStorage {
 
   Future<void> writeThemeMode(ThemeMode mode) =>
       _box.put(_themeModeKey, mode.name);
+
+  /// The chosen language code, or `null` to follow the device.
+  String? readLanguageCode() => _box.get(_languageKey);
+
+  Future<void> writeLanguageCode(String? code) =>
+      code == null ? _box.delete(_languageKey) : _box.put(_languageKey, code);
 }
