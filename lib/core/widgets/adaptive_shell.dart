@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/utils/breakpoints.dart';
 import 'package:shopsphere/core/widgets/offline_banner.dart';
 
@@ -11,7 +12,8 @@ class ShellDestination {
     required this.selectedIcon,
   });
 
-  final String label;
+  /// Looked up per build so it follows the current language.
+  final String Function(BuildContext context) label;
   final IconData icon;
   final IconData selectedIcon;
 }
@@ -50,12 +52,10 @@ class AdaptiveShell extends StatelessWidget {
     );
   }
 
-  String _label(int index) {
+  String _label(BuildContext context, int index) {
     final count = badges[index] ?? 0;
-    final label = destinations[index].label;
-    return count > 0
-        ? '$label, $count ${count == 1 ? 'item' : 'items'}'
-        : label;
+    final label = destinations[index].label(context);
+    return count > 0 ? context.l10n.navItemsLabel(label, count) : label;
   }
 
   @override
@@ -78,8 +78,8 @@ class AdaptiveShell extends StatelessWidget {
               NavigationDestination(
                 icon: _icon(i, selected: false),
                 selectedIcon: _icon(i, selected: true),
-                label: destinations[i].label,
-                tooltip: _label(i),
+                label: destinations[i].label(context),
+                tooltip: _label(context, i),
               ),
           ],
         ),
@@ -106,7 +106,7 @@ class AdaptiveShell extends StatelessWidget {
                   NavigationRailDestination(
                     icon: _icon(i, selected: false),
                     selectedIcon: _icon(i, selected: true),
-                    label: Text(destinations[i].label),
+                    label: Text(destinations[i].label(context)),
                   ),
               ],
             ),

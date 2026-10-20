@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 
 /// The ShopSphere mark: a rounded tile with a shopping bag.
@@ -14,7 +15,7 @@ class AppLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Semantics(
-      label: 'ShopSphere logo',
+      label: context.l10n.logoLabel,
       child: Container(
         width: size,
         height: size,
@@ -58,7 +59,7 @@ class BrandPanel extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.xs),
         Text(
-          'Everything you love, in one place.',
+          context.l10n.appTagline,
           style: theme.textTheme.bodyLarge?.copyWith(color: scheme.onPrimary),
         ),
       ],

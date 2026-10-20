@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 
 /// − n + stepper. A `null` callback disables that button.
@@ -26,12 +27,12 @@ class QuantitySelector extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           IconButton(
-            tooltip: 'Decrease quantity',
+            tooltip: context.l10n.decreaseQuantity,
             onPressed: onDecrement,
             icon: const Icon(Icons.remove_rounded),
           ),
           Semantics(
-            label: 'Quantity $quantity',
+            label: context.l10n.quantityLabel(quantity),
             excludeSemantics: true,
             child: ConstrainedBox(
               constraints: const BoxConstraints(minWidth: 28),
@@ -43,7 +44,7 @@ class QuantitySelector extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Increase quantity',
+            tooltip: context.l10n.increaseQuantity,
             onPressed: onIncrement,
             icon: const Icon(Icons.add_rounded),
           ),

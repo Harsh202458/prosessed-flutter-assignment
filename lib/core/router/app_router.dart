@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shopsphere/core/di/injection.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/router/app_routes.dart';
 import 'package:shopsphere/core/router/stream_listenable.dart';
 import 'package:shopsphere/core/widgets/adaptive_shell.dart';
@@ -24,19 +25,23 @@ import 'package:shopsphere/features/products/presentation/pages/products_page.da
 import 'package:shopsphere/features/profile/presentation/pages/profile_page.dart';
 import 'package:shopsphere/features/wishlist/presentation/pages/wishlist_page.dart';
 
+String _shopLabel(BuildContext context) => context.l10n.navShop;
+String _cartLabel(BuildContext context) => context.l10n.navCart;
+String _profileLabel(BuildContext context) => context.l10n.navProfile;
+
 const _destinations = [
   ShellDestination(
-    label: 'Shop',
+    label: _shopLabel,
     icon: Icons.storefront_outlined,
     selectedIcon: Icons.storefront,
   ),
   ShellDestination(
-    label: 'Cart',
+    label: _cartLabel,
     icon: Icons.shopping_bag_outlined,
     selectedIcon: Icons.shopping_bag,
   ),
   ShellDestination(
-    label: 'Profile',
+    label: _profileLabel,
     icon: Icons.person_outline_rounded,
     selectedIcon: Icons.person_rounded,
   ),

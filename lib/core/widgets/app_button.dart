@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 
 /// Primary full-width button that swaps its label for a spinner while busy.
 class AppButton extends StatelessWidget {
@@ -36,7 +37,7 @@ class AppButton extends StatelessWidget {
           ? FilledButton(
               onPressed: isLoading ? null : onPressed,
               child: Semantics(
-                label: isLoading ? 'Loading' : null,
+                label: isLoading ? context.l10n.loading : null,
                 child: child,
               ),
             )

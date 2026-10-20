@@ -1,22 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 
 /// Full-area error state with an optional retry action.
 class ErrorView extends StatelessWidget {
   const ErrorView({
     required this.message,
-    this.title = 'Something went wrong',
+    this.title,
     this.icon = Icons.cloud_off_rounded,
     this.onRetry,
-    this.actionLabel = 'Retry',
+    this.actionLabel,
     super.key,
   });
 
-  final String title;
+  /// Defaults to a generic "Something went wrong".
+  final String? title;
   final String message;
   final IconData icon;
   final VoidCallback? onRetry;
-  final String actionLabel;
+
+  /// Defaults to "Retry".
+  final String? actionLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +44,7 @@ class ErrorView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.lg),
               Text(
-                title,
+                title ?? context.l10n.somethingWentWrong,
                 style: theme.textTheme.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -57,7 +61,7 @@ class ErrorView extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onRetry,
                   icon: const Icon(Icons.refresh_rounded),
-                  label: Text(actionLabel),
+                  label: Text(actionLabel ?? context.l10n.retry),
                 ),
               ],
             ],

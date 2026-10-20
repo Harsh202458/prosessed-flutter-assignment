@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shopsphere/core/l10n/l10n.dart';
 import 'package:shopsphere/core/network/connectivity_cubit.dart';
 import 'package:shopsphere/core/theme/app_spacing.dart';
 
@@ -39,7 +40,7 @@ class OfflineBanner extends StatelessWidget {
                       const SizedBox(width: AppSpacing.sm),
                       Expanded(
                         child: Text(
-                          "You're offline. Showing saved products.",
+                          context.l10n.offlineBanner,
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: scheme.onInverseSurface,
                           ),
