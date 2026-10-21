@@ -18,6 +18,8 @@ phones to tablets in landscape.
 
 ## 1. Screenshots
 
+Captured from the release APK on an Android 15 emulator (Pixel 7; the tablet shot uses a 1280×800 dp display).
+
 | Login | Home | Search and filter | Product details |
 |---|---|---|---|
 | ![Login](docs/screenshots/login.png) | ![Home](docs/screenshots/home.png) | ![Search](docs/screenshots/search.png) | ![Details](docs/screenshots/details.png) |
@@ -25,6 +27,10 @@ phones to tablets in landscape.
 | Cart | Order placed | Profile | Offline |
 |---|---|---|---|
 | ![Cart](docs/screenshots/cart.png) | ![Order](docs/screenshots/order.png) | ![Profile](docs/screenshots/profile.png) | ![Offline](docs/screenshots/offline.png) |
+
+| Dark theme | Hindi (हिन्दी) |
+|---|---|
+| ![Dark theme](docs/screenshots/dark_home.png) | ![Hindi](docs/screenshots/hindi_home.png) |
 
 | Tablet landscape: master–detail | Phone landscape: navigation rail |
 |---|---|
