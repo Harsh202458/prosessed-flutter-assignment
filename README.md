@@ -10,8 +10,8 @@ photos and reviews, build a cart that survives restarts, and place a
 BLoC/Cubit state management and typed error handling, and it adapts from
 phones to tablets in landscape.
 
-- **Release APK:** see [Releases → v1.0.0](../../releases/tag/v1.0.0)
-- **Demo video:** _link added at submission_
+- **Release APK:** see [Releases → v1.0.0](https://github.com/Harsh202458/prosessed-flutter-assignment/releases/tag/v1.0.0)
+- **Demo video, APK and screenshots (Google Drive):** [Prosessed_Flutter_Harsh](https://drive.google.com/drive/folders/1psDWcktT40fqUFnuAqm_bBvAeAZYPvNs)
 - **Test login:** `emilys` / `emilyspass` (or tap **Use demo account**)
 
 ---
@@ -298,8 +298,7 @@ any part of the code.
 
 - **Name:** Harsh
 - **GitHub:** [Harsh202458](https://github.com/Harsh202458)
-- **Email:** _add before submission_
-- **LinkedIn:** _add before submission_
-- **Portfolio:** _add before submission_
+- **Email:** [hr202458@gmail.com](mailto:hr202458@gmail.com)
+- **LinkedIn:** [harsh-85b780294](https://www.linkedin.com/in/harsh-85b780294/)
 
 Fonts: Poppins © The Poppins Project Authors, SIL Open Font License 1.1 (`assets/fonts/OFL.txt`).
